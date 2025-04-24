@@ -46,7 +46,7 @@
                             Fazer anúncio
                         </a>
 
-                        <div class="dropdown">
+                        <div class="dropdown" *ngIf="currentUser">
                             <div class="d-flex align-items-center user-menu-trigger" id="userMenu"
                                 data-bs-toggle="dropdown" aria-expanded="false">
                                 <div class="user-info me-2 d-none d-md-block">

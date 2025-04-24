@@ -395,7 +395,7 @@ export class MockDataService {
             id_usuario: 8,
             latitude: -23.5215,
             longitude: -47.4826,
-            comodidades: ["equipamentos", "freezer", "area_preparo"],
+            comodidades: ["equipamentos", "freezer", "area preparo"],
         },
         {
             id_local: 16,

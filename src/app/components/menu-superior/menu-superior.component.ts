@@ -6,6 +6,7 @@ import { Empresa } from '../../models/Empresa';
 import { Usuario } from '../../models/Usuario';
 import { UserType } from '../../models/Auth';
 import { MockDataService } from '../../services/mock.dados.service';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-menu-superior',
@@ -27,26 +28,23 @@ export class MenuSuperiorComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.authService.isLoggedIn$.subscribe((status) => {
-      this.isLoggedIn = status
-      this.atualizarContadorNotificacoes()
-    })
-
-    this.authService.userType$.subscribe((type) => {
-      this.userType = type
-    })
-
-    this.authService.currentUser$.subscribe((user) => {
-      this.currentUser = user
-      this.updateUserInfo()
-      this.atualizarContadorNotificacoes()
-    })
+    combineLatest([
+      this.authService.isLoggedIn$,
+      this.authService.userType$,
+      this.authService.currentUser$
+    ]).subscribe(([status, type, user]) => {
+      this.isLoggedIn = status;
+      this.userType = type;
+      this.currentUser = user;
+      this.updateUserInfo();
+      this.atualizarContadorNotificacoes();
+    });
 
     setInterval(() => {
       if (this.isLoggedIn && this.currentUser) {
-        this.atualizarContadorNotificacoes()
+        this.atualizarContadorNotificacoes();
       }
-    }, 30000)
+    }, 30000);
   }
 
   updateUserInfo(): void {
@@ -55,6 +53,8 @@ export class MenuSuperiorComponent implements OnInit {
       this.userEmail = ""
       return
     }
+
+    console.log('Atualizando informações do usuário:', this.currentUser);
 
     if (this.userType === "usuario") {
       const usuario = this.currentUser as Usuario

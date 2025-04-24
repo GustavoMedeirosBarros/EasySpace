@@ -120,11 +120,11 @@
 }
 
 .mobile-nav-item.active {
-    color: #e41e63;
+    color: #ffc107;
 }
 
 .mobile-nav-item.active .mobile-nav-icon {
-    color: #e41e63;
+    color: #ffc107;
 }
 
 .offcanvas-header {

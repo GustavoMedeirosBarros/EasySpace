@@ -10,8 +10,8 @@ export interface Local {
     celular_local: string
     descricao_local: string
     valor: number
-    tipo_local: string // tipo de local como evento, sala, etc
-    tipo_locacao: string // tipo de locacao como diaria, mensal, etc
+    tipo_local: string
+    tipo_locacao: string
     data_disponibilidade: Date
     avaliacao: number
     id_empresa: number
