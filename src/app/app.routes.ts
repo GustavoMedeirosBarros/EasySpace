@@ -1,3 +1,32 @@
 import { Routes } from '@angular/router';
+import { HomeComponent } from './pages/home/home.component';
+import { LoginComponent } from './pages/login/login.component';
+import { RegistroComponent } from './pages/registro/registro.component';
+import { LocalDetailsComponent } from './pages/local-details/local-details.component';
+import { PaginaNaoEncontradaComponent } from './pages/pagina-nao-encontrada/pagina-nao-encontrada.component';
+import { PerfilProprietarioComponent } from './pages/perfil-proprietario/perfil-proprietario.component';
+import { FavoritosComponent } from './pages/favoritos/favoritos.component';
+import { ExplorarComponent } from './pages/explorar/explorar.component';
+import { NotificacoesComponent } from './pages/notificacoes/notificacoes.component';
+import { CriarAnuncioComponent } from './pages/criar-anuncio/criar-anuncio.component';
+import { MeusAnunciosComponent } from './pages/meus-anuncios/meus-anuncios.component';
+import { PerfilComponent } from './pages/perfil/perfil.component';
+import { ConfiguracoesComponent } from './pages/configuracoes/configuracoes.component';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+    { path: '', redirectTo: 'home', pathMatch: 'full' },
+    { path: 'home', component: HomeComponent },
+    { path: 'login', component: LoginComponent },
+    { path: 'registro', component: RegistroComponent },
+    { path: 'local/:id', component: LocalDetailsComponent },
+    { path: 'perfil-usuario/:id', component: PerfilProprietarioComponent },
+    { path: 'perfil-empresa/:id', component: PerfilProprietarioComponent },
+    { path: 'favoritos', component: FavoritosComponent },
+    { path: 'explorar', component: ExplorarComponent },
+    { path: 'notificacoes', component: NotificacoesComponent },
+    { path: 'criar-anuncio', component: CriarAnuncioComponent },
+    { path: 'meus-anuncios', component: MeusAnunciosComponent },
+    { path: 'perfil', component: PerfilComponent },
+    { path: 'configuracoes', component: ConfiguracoesComponent },
+    { path: '**', component: PaginaNaoEncontradaComponent }
+];

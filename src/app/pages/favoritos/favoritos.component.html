@@ -1,0 +1,65 @@
+<div class="container mt-4 mb-5">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Meus Favoritos<i class="bi bi-chevron-down"></i></h2>
+
+            <div class="text-center py-5" *ngIf="isLoading">
+                <div class="spinner-border text-warning" role="status">
+                    <span class="visually-hidden">Carregando...</span>
+                </div>
+                <p class="mt-3">Carregando seus favoritos...</p>
+            </div>
+
+            <div class="text-center py-5" *ngIf="!isLoading && !isLoggedIn">
+                <i class="bi bi-person-lock display-1 text-muted"></i>
+                <h3 class="mt-3">Você precisa estar logado para ver seus favoritos</h3>
+                <p class="text-muted">Faça login ou crie uma conta para salvar seus locais favoritos</p>
+                <div class="mt-4">
+                    <button class="btn btn-warning me-2 text-white" (click)="irParaLogin()">Entrar</button>
+                    <button class="btn btn-outline-warning" (click)="irParaRegistro()">Criar conta</button>
+                </div>
+            </div>
+
+            <div class="text-center py-5" *ngIf="!isLoading && isLoggedIn && locaisFavoritos.length === 0">
+                <i class="bi bi-heart display-1 text-muted"></i>
+                <h3 class="mt-3">Você ainda não tem favoritos</h3>
+                <p class="text-muted">Explore os locais disponíveis e adicione-os aos seus favoritos</p>
+                <a routerLink="/" class="btn btn-primary mt-3">Explorar locais</a>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"
+                *ngIf="!isLoading && isLoggedIn && locaisFavoritos.length > 0">
+                <div class="col" *ngFor="let local of locaisFavoritos">
+                    <div class="card listing-card h-100" [routerLink]="['/local', local.id_local]">
+                        <div class="position-relative">
+                            <img [src]="local.imagem_local" class="card-img-top" [alt]="local.nome_local">
+                            <button class="btn btn-sm btn-light rounded-circle favorite-btn"
+                                (click)="removerFavorito(local, $event)">
+                                <i class="bi bi-heart-fill text-danger"></i>
+                            </button>
+                            <span class="badge bg-warning category-badge">
+                                {{ local.tipo_local }}
+                            </span>
+                        </div>
+                        <div class="card-body p-2">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h6 class="card-title mb-0">{{ local.nome_local }}</h6>
+                                <div class="rating">
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <span class="ms-1">{{ local.avaliacao.toFixed(1) }}</span>
+                                </div>
+                            </div>
+                            <p class="card-text text-muted small mb-1">
+                                {{ local.cidade_local }}, {{ local.estado_local }}
+                            </p>
+                            <p class="card-text fw-bold" *ngIf="local.valor > 0">
+                                R$ {{ local.valor.toFixed(2) }} <span class="fw-normal">{{ getLocacaoText(local)
+                                    }}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

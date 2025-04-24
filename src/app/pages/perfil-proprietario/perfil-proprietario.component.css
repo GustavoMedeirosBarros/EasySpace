@@ -1,0 +1,47 @@
+.owner-avatar {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border: 3px solid #ffc107;
+}
+
+.owner-info p {
+    margin-bottom: 0.5rem;
+}
+
+.listing-card {
+    transition: transform 0.2s;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.listing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-img-top {
+    height: 150px;
+    object-fit: cover;
+}
+
+.category-badge {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.rating {
+    font-size: 0.9rem;
+}
+
+@media (max-width: 767.98px) {
+    .owner-avatar {
+        width: 100px;
+        height: 100px;
+    }
+}

@@ -1,0 +1,17 @@
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container-fluid {
+    min-height: calc(100vh - 140px);
+}
+
+@media (max-width: 991.98px) {
+    body {
+        padding-bottom: 70px;
+    }
+
+    .container-fluid {
+        min-height: calc(100vh - 210px);
+    }
+}

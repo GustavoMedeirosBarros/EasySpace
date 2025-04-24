@@ -1,0 +1,212 @@
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm my-5">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <img src="Logo.png" alt="Easy Space" height="60" class="mb-3">
+                        <h4>Criar uma nova conta</h4>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="btn-group w-100" role="group">
+                            <button type="button" class="btn" [class.btn-primary]="selectedUserType === 'usuario'"
+                                [class.btn-outline-warning]="selectedUserType !== 'usuario'"
+                                (click)="onUserTypeChange('usuario')">
+                                Usuário
+                            </button>
+                            <button type="button" class="btn" [class.btn-primary]="selectedUserType === 'empresa'"
+                                [class.btn-outline-warning]="selectedUserType !== 'empresa'"
+                                (click)="onUserTypeChange('empresa')">
+                                Empresa
+                            </button>
+                        </div>
+                    </div>
+
+                    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+                        <div class="alert alert-danger" *ngIf="errorMessage">
+                            {{ errorMessage }}
+                        </div>
+
+                        <ng-container *ngIf="selectedUserType === 'usuario'">
+                            <div class="mb-3">
+                                <label for="nome_usuario" class="form-label">Nome completo</label>
+                                <input type="text" class="form-control" id="nome_usuario" formControlName="nome_usuario"
+                                    [ngClass]="{'is-invalid': registerForm.get('nome_usuario')?.invalid && registerForm.get('nome_usuario')?.touched}">
+                                <div class="invalid-feedback"
+                                    *ngIf="registerForm.get('nome_usuario')?.errors?.['required']">
+                                    Nome é obrigatório
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email_usuario" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email_usuario"
+                                    formControlName="email_usuario"
+                                    [ngClass]="{'is-invalid': registerForm.get('email_usuario')?.invalid && registerForm.get('email_usuario')?.touched}">
+                                <div class="invalid-feedback"
+                                    *ngIf="registerForm.get('email_usuario')?.errors?.['required']">
+                                    Email é obrigatório
+                                </div>
+                                <div class="invalid-feedback"
+                                    *ngIf="registerForm.get('email_usuario')?.errors?.['email']">
+                                    Formato de email inválido
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="cpf" class="form-label">CPF</label>
+                                <input type="text" class="form-control" id="cpf" formControlName="cpf"
+                                    [ngClass]="{'is-invalid': registerForm.get('cpf')?.invalid && registerForm.get('cpf')?.touched}">
+                                <div class="invalid-feedback" *ngIf="registerForm.get('cpf')?.errors?.['required']">
+                                    CPF é obrigatório
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="data_nascimento" class="form-label">Data de Nascimento</label>
+                                <input type="date" class="form-control" id="data_nascimento"
+                                    formControlName="data_nascimento"
+                                    [ngClass]="{'is-invalid': registerForm.get('data_nascimento')?.invalid && registerForm.get('data_nascimento')?.touched}">
+                                <div class="invalid-feedback"
+                                    *ngIf="registerForm.get('data_nascimento')?.errors?.['required']">
+                                    Data de nascimento é obrigatória
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <label for="cidade_usuario" class="form-label">Cidade</label>
+                                    <input type="text" class="form-control" id="cidade_usuario"
+                                        formControlName="cidade_usuario">
+                                </div>
+                                <div class="col">
+                                    <label for="estado_usuario" class="form-label">Estado</label>
+                                    <input type="text" class="form-control" id="estado_usuario"
+                                        formControlName="estado_usuario">
+                                </div>
+                            </div>
+                        </ng-container>
+
+                        <ng-container *ngIf="selectedUserType === 'empresa'">
+                            <div class="mb-3">
+                                <label for="nome_empresa" class="form-label">Nome da Empresa</label>
+                                <input type="text" class="form-control" id="nome_empresa" formControlName="nome_empresa"
+                                    [ngClass]="{'is-invalid': registerForm.get('nome_empresa')?.invalid && registerForm.get('nome_empresa')?.touched}">
+                                <div class="invalid-feedback"
+                                    *ngIf="registerForm.get('nome_empresa')?.errors?.['required']">
+                                    Nome da empresa é obrigatório
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email_empresa" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email_empresa"
+                                    formControlName="email_empresa"
+                                    [ngClass]="{'is-invalid': registerForm.get('email_empresa')?.invalid && registerForm.get('email_empresa')?.touched}">
+                                <div class="invalid-feedback"
+                                    *ngIf="registerForm.get('email_empresa')?.errors?.['required']">
+                                    Email é obrigatório
+                                </div>
+                                <div class="invalid-feedback"
+                                    *ngIf="registerForm.get('email_empresa')?.errors?.['email']">
+                                    Formato de email inválido
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="cnpj" class="form-label">CNPJ</label>
+                                <input type="text" class="form-control" id="cnpj" formControlName="cnpj"
+                                    [ngClass]="{'is-invalid': registerForm.get('cnpj')?.invalid && registerForm.get('cnpj')?.touched}">
+                                <div class="invalid-feedback" *ngIf="registerForm.get('cnpj')?.errors?.['required']">
+                                    CNPJ é obrigatório
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <label for="cidade_empresa" class="form-label">Cidade</label>
+                                    <input type="text" class="form-control" id="cidade_empresa"
+                                        formControlName="cidade_empresa">
+                                </div>
+                                <div class="col">
+                                    <label for="estado_empresa" class="form-label">Estado</label>
+                                    <input type="text" class="form-control" id="estado_empresa"
+                                        formControlName="estado_empresa">
+                                </div>
+                            </div>
+                        </ng-container>
+
+                        <div class="mb-3">
+                            <label for="cep" class="form-label">CEP</label>
+                            <input type="text" class="form-control" id="cep" formControlName="cep">
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="celular" class="form-label">Celular</label>
+                                <input type="text" class="form-control" id="celular" formControlName="celular">
+                            </div>
+                            <div class="col">
+                                <label for="telefone" class="form-label">Telefone</label>
+                                <input type="text" class="form-control" id="telefone" formControlName="telefone">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="senha" class="form-label">Senha</label>
+                            <input type="password" class="form-control" id="senha" formControlName="senha"
+                                [ngClass]="{'is-invalid': registerForm.get('senha')?.invalid && registerForm.get('senha')?.touched}">
+                            <div class="invalid-feedback" *ngIf="registerForm.get('senha')?.errors?.['required']">
+                                Senha é obrigatória
+                            </div>
+                            <div class="invalid-feedback" *ngIf="registerForm.get('senha')?.errors?.['minlength']">
+                                Senha deve ter pelo menos 6 caracteres
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confirmSenha" class="form-label">Confirmar senha</label>
+                            <input type="password" class="form-control" id="confirmSenha" formControlName="confirmSenha"
+                                [ngClass]="{'is-invalid': registerForm.get('confirmSenha')?.invalid && registerForm.get('confirmSenha')?.touched}">
+                            <div class="invalid-feedback"
+                                *ngIf="registerForm.get('confirmSenha')?.errors?.['required']">
+                                Confirmação de senha é obrigatória
+                            </div>
+                            <div class="invalid-feedback"
+                                *ngIf="registerForm.get('confirmSenha')?.errors?.['passwordMismatch']">
+                                Senhas não conferem
+                            </div>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="terms" formControlName="terms"
+                                [ngClass]="{'is-invalid': registerForm.get('terms')?.invalid && registerForm.get('terms')?.touched}">
+                            <label class="form-check-label" for="terms">
+                                Eu concordo com os <a href="/termos" target="_blank">Termos de Uso</a> e <a
+                                    href="/privacidade" target="_blank">Política de Privacidade</a>
+                            </label>
+                            <div class="invalid-feedback" *ngIf="registerForm.get('terms')?.errors?.['required']">
+                                Você deve aceitar os termos para continuar
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary"
+                                [disabled]="registerForm.invalid || isLoading">
+                                <span class="spinner-border spinner-border-sm me-2" *ngIf="isLoading"></span>
+                                Cadastrar
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <p>Já tem uma conta? <a routerLink="/login" class="text-decoration-none">Entrar</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

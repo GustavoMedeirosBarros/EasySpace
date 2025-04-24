@@ -1,0 +1,170 @@
+.sidebar-filter {
+    background-color: #fff;
+    border-right: 1px solid #e5e5e5;
+    min-height: calc(100vh - 140px);
+    transition: all 0.3s ease;
+}
+
+
+.filter-container {
+    position: sticky;
+    top: 80px;
+}
+
+.category-list {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.category-item {
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.category-item:hover {
+    background-color: #f8f9fa;
+}
+
+.category-item.active {
+    background-color: #fff9e6;
+    color: #ffc107;
+}
+
+.category-icon {
+    width: 24px;
+    text-align: center;
+}
+
+.search-container {
+    max-width: 800px;
+}
+
+.listing-card {
+    transition: transform 0.2s;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.listing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-img-top {
+    height: 180px;
+    object-fit: cover;
+}
+
+.favorite-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.9;
+    z-index: 10;
+}
+
+.category-badge {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.rating {
+    font-size: 0.9rem;
+}
+
+.pagination .page-link {
+    cursor: pointer;
+}
+
+.search-results {
+    font-size: 0.9rem;
+}
+
+.sidebar-toggle {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #ffc107;
+    color: #212529;
+    width: 40px;
+    height: 40px;
+    border-radius: 0 4px 4px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 999;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.sidebar-toggle.active {
+    left: calc(80% - 40px);
+}
+
+.sidebar-toggle i {
+    font-size: 1.2rem;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+}
+
+
+
+
+
+@media (max-width: 991.98px) {
+    .sidebar-filter {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 80%;
+        height: 100vh;
+        z-index: 999;
+        overflow-y: auto;
+        padding-bottom: 70px;
+    }
+
+    .sidebar-filter.active {
+        left: 0;
+    }
+
+    .filter-container {
+        position: relative;
+        top: 0;
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .main-content {
+        width: 100%;
+        padding-bottom: 70px;
+    }
+}
+
+
+@media (max-width: 991.98px) {
+    body {
+        padding-bottom: 70px;
+    }
+}

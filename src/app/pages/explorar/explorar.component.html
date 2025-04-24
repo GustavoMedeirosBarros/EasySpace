@@ -1,0 +1,223 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="sidebar-toggle d-lg-none" [class.active]="sidebarOpen" (click)="toggleSidebar()">
+            <i class="bi" [ngClass]="sidebarOpen ? 'bi-x' : 'bi-filter'"></i>
+        </div>
+
+        <div class="col-lg-3 col-xl-2 sidebar-filter" [class.active]="sidebarOpen">
+            <div class="filter-container p-3">
+                <div class="d-flex justify-content-between align-items-center mb-3 d-lg-none">
+                    <h5 class="mb-0">Filtros</h5>
+                    <button class="btn-close" (click)="toggleSidebar()"></button>
+                </div>
+
+                <!-- Categorias -->
+                <div class="mb-4">
+                    <h6 class="mb-2">Categorias</h6>
+                    <div class="category-list">
+                        <div *ngFor="let category of categories" class="category-item d-flex align-items-center mb-2"
+                            [class.active]="selectedCategory === category.id" (click)="selectCategory(category.id)">
+                            <div class="category-icon me-2">
+                                <i [class]="'bi ' + category.icon"></i>
+                            </div>
+                            <div class="category-name">{{ category.name }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filtro de preço -->
+                <div class="mb-4">
+                    <h6 class="mb-2">Preço</h6>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="priceFilter" id="priceLow"
+                            [checked]="isFilterActive('price', 'menor')" (change)="applyPriceFilter('menor')">
+                        <label class="form-check-label" for="priceLow">
+                            Menor preço
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="priceFilter" id="priceHigh"
+                            [checked]="isFilterActive('price', 'maior')" (change)="applyPriceFilter('maior')">
+                        <label class="form-check-label" for="priceHigh">
+                            Maior preço
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Filtro de avaliação -->
+                <div class="mb-4">
+                    <h6 class="mb-2">Avaliação</h6>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="ratingFilter" id="rating5"
+                            [checked]="isFilterActive('rating', 5)" (change)="applyRatingFilter(5)">
+                        <label class="form-check-label" for="rating5">
+                            5 estrelas
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="ratingFilter" id="rating4"
+                            [checked]="isFilterActive('rating', 4)" (change)="applyRatingFilter(4)">
+                        <label class="form-check-label" for="rating4">
+                            4+ estrelas
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="ratingFilter" id="rating3"
+                            [checked]="isFilterActive('rating', 3)" (change)="applyRatingFilter(3)">
+                        <label class="form-check-label" for="rating3">
+                            3+ estrelas
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Filtro de distância -->
+                <div class="mb-4">
+                    <h6 class="mb-2">Distância</h6>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="distanceFilter" id="distanceNearest"
+                            [checked]="isFilterActive('distance', 'proximo')" [disabled]="!geoLocationAvailable"
+                            (change)="applyDistanceFilter('proximo')">
+                        <label class="form-check-label" for="distanceNearest">
+                            Mais próximo
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="distanceFilter" id="distance5km"
+                            [checked]="isFilterActive('distance', '5km')" [disabled]="!geoLocationAvailable"
+                            (change)="applyDistanceFilter('5km')">
+                        <label class="form-check-label" for="distance5km">
+                            Até 5km
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="distanceFilter" id="distance10km"
+                            [checked]="isFilterActive('distance', '10km')" [disabled]="!geoLocationAvailable"
+                            (change)="applyDistanceFilter('10km')">
+                        <label class="form-check-label" for="distance10km">
+                            Até 10km
+                        </label>
+                    </div>
+                    <div *ngIf="!geoLocationAvailable" class="alert alert-warning py-1 px-2 mt-2 small">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                        Permita o acesso à sua localização para usar este filtro
+                    </div>
+                </div>
+
+                <!-- Filtro de comodidades -->
+                <div class="mb-4">
+                    <h6 class="mb-2">Comodidades</h6>
+                    <div class="form-check mb-2" *ngFor="let comodidade of comodidades">
+                        <input class="form-check-input" type="checkbox" [id]="comodidade.id"
+                            [checked]="isFilterActive('amenity', comodidade.id)"
+                            (change)="toggleAmenityFilter(comodidade.id)">
+                        <label class="form-check-label" [for]="comodidade.id">
+                            {{ comodidade.name }}
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Botão para limpar filtros -->
+                <button class="btn btn-outline-secondary w-100" (click)="clearFilters()">
+                    Limpar filtros
+                </button>
+            </div>
+        </div>
+
+        <div class="col-lg-9 col-xl-10 main-content pt-4">
+            <h2>Explorar<i class="bi bi-chevron-down"></i></h2>
+            <div class="search-container my-3">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Buscar por nome, descrição ou cidade"
+                        [(ngModel)]="searchTerm" (keyup.enter)="search()">
+                    <button class="btn btn-outline-secondary" type="button" (click)="search()">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="search-results mb-3" *ngIf="searchTerm || selectedCategory !== 'todos'">
+                <p class="text-muted">
+                    <span *ngIf="filteredLocais.length > 0">
+                        Exibindo {{ filteredLocais.length }} resultado(s)
+                        <ng-container *ngIf="searchTerm">para "{{ searchTerm }}"</ng-container>
+                        <ng-container *ngIf="selectedCategory !== 'todos'">
+                            na categoria {{ getCategoryName(selectedCategory) }}
+                        </ng-container>
+                    </span>
+                    <span *ngIf="filteredLocais.length === 0">
+                        Nenhum resultado encontrado
+                        <ng-container *ngIf="searchTerm">para "{{ searchTerm }}"</ng-container>
+                        <ng-container *ngIf="selectedCategory !== 'todos'">
+                            na categoria {{ getCategoryName(selectedCategory) }}
+                        </ng-container>
+                    </span>
+                </p>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
+                <div class="col" *ngFor="let local of paginatedLocais">
+                    <div class="card listing-card h-100" [routerLink]="['/local', local.id_local]">
+                        <div class="position-relative">
+                            <img [src]="local.imagem_local" class="card-img-top" [alt]="local.nome_local">
+                            <button class="btn btn-sm btn-light rounded-circle favorite-btn"
+                                (click)="toggleFavorite(local, $event)">
+                                <i class="bi"
+                                    [ngClass]="isFavorito(local.id_local) ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
+                            </button>
+                            <span class="badge bg-warning category-badge">
+                                {{ getLocalCategoryName(local) }}
+                            </span>
+                        </div>
+                        <div class="card-body p-2">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h6 class="card-title mb-0">{{ local.nome_local }}</h6>
+                                <div class="rating">
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <span class="ms-1">{{ local.avaliacao.toFixed(1) }}</span>
+                                </div>
+                            </div>
+                            <p class="card-text text-muted small mb-1">
+                                {{ local.cidade_local }}, {{ local.estado_local }}
+                            </p>
+                            <p class="card-text fw-bold" *ngIf="local.valor > 0">
+                                R$ {{ local.valor.toFixed(2) }} <span class="fw-normal">{{ getLocacaoText(local)
+                                    }}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center py-5" *ngIf="filteredLocais.length === 0">
+                <i class="bi bi-search display-1 text-muted"></i>
+                <h4 class="mt-3">Nenhum resultado encontrado</h4>
+                <p class="text-muted">Tente ajustar seus filtros ou fazer uma nova busca</p>
+                <button class="btn btn-primary mt-2" (click)="clearFilters()">Limpar filtros</button>
+            </div>
+
+
+            <nav aria-label="Paginação" *ngIf="totalPages > 1">
+
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" [class.disabled]="currentPage === 1">
+                        <a class="page-link" (click)="changePage(currentPage - 1)" aria-label="Anterior">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+
+                    <li *ngFor="let page of pages" class="page-item" [class.active]="page === currentPage">
+                        <a class="page-link" (click)="changePage(page)">{{ page }}</a>
+                    </li>
+
+                    <li class="page-item" [class.disabled]="currentPage === totalPages">
+                        <a class="page-link" (click)="changePage(currentPage + 1)" aria-label="Próximo">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="sidebar-overlay" *ngIf="sidebarOpen" (click)="toggleSidebar()"></div>

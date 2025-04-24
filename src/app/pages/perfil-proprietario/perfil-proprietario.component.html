@@ -1,0 +1,125 @@
+<div class="container mt-4 mb-5" *ngIf="!isLoading && owner">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <img src="icon_h.png" class="rounded-circle owner-avatar mb-3" alt="Avatar do proprietário">
+                    <h4>{{ getOwnerName() }}</h4>
+                    <p class="text-muted">{{ isEmpresa ? 'Empresa' : 'Usuário' }}</p>
+
+                    <div class="d-flex justify-content-center mb-3">
+                        <div class="me-3 text-center">
+                            <h5 class="mb-0">{{ totalLocais }}</h5>
+                            <small class="text-muted">Anúncios</small>
+                        </div>
+                        <div class="text-center">
+                            <h5 class="mb-0">{{ mediaAvaliacoes }}</h5>
+                            <small class="text-muted">Avaliação</small>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-warning w-100 mb-3" (click)="startChat()">
+                        <i class="bi bi-chat-dots me-2"></i>Enviar mensagem
+                    </button>
+
+                    <div class="owner-info text-start">
+                        <p><i class="bi bi-envelope me-2"></i>{{ getOwnerEmail() }}</p>
+                        <p><i class="bi bi-telephone me-2"></i>{{ getOwnerPhone() }}</p>
+                        <p><i class="bi bi-geo-alt me-2"></i>{{ getOwnerLocation() }}</p>
+                        <p><i class="bi bi-card-text me-2"></i>{{ getOwnerDocument() }}</p>
+                        <p><i class="bi bi-calendar-check me-2"></i>No EasySpace desde {{ isEmpresa ? 'Janeiro/2023' :
+                            'Março/2023' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Estatísticas</h5>
+                    <div class="stats-item d-flex justify-content-between mb-2">
+                        <span>Taxa de resposta</span>
+                        <span class="fw-bold">98%</span>
+                    </div>
+                    <div class="stats-item d-flex justify-content-between mb-2">
+                        <span>Tempo de resposta</span>
+                        <span class="fw-bold">Em até 1 hora</span>
+                    </div>
+                    <div class="stats-item d-flex justify-content-between">
+                        <span>Reservas concluídas</span>
+                        <span class="fw-bold">{{ totalLocais * 5 }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Sobre</h5>
+                    <p>
+                        {{ isEmpresa ?
+                        'Somos uma empresa especializada em oferecer espaços para eventos e reuniões. Nossos locais são
+                        cuidadosamente selecionados e preparados para proporcionar a melhor experiência aos nossos
+                        clientes.' :
+                        'Olá! Sou proprietário de espaços para eventos e estou no EasySpace para facilitar o aluguel dos
+                        meus imóveis. Tenho o compromisso de oferecer locais bem cuidados e com ótima infraestrutura.'
+                        }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Anúncios ({{ totalLocais }})</h5>
+
+                    <div *ngIf="ownerLocais.length === 0" class="text-center py-3">
+                        <p class="text-muted">Este proprietário ainda não possui anúncios.</p>
+                    </div>
+
+                    <div class="row row-cols-1 row-cols-md-2 g-3">
+                        <div class="col" *ngFor="let local of ownerLocais">
+                            <div class="card h-100 listing-card" [routerLink]="['/local', local.id_local]">
+                                <div class="position-relative">
+                                    <img [src]="local.imagem_local" class="card-img-top" [alt]="local.nome_local">
+                                    <span class="badge bg-primary category-badge">
+                                        {{ local.tipo_local }}
+                                    </span>
+                                </div>
+                                <div class="card-body p-2">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <h6 class="card-title mb-0">{{ local.nome_local }}</h6>
+                                        <div class="rating">
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                            <span class="ms-1">{{ local.avaliacao.toFixed(1) }}</span>
+                                        </div>
+                                    </div>
+                                    <p class="card-text text-muted small mb-1">
+                                        {{ local.cidade_local }}, {{ local.estado_local }}
+                                    </p>
+                                    <p class="card-text fw-bold">
+                                        R$ {{ local.valor.toFixed(2) }} <span class="fw-normal">{{ getLocacaoText(local)
+                                            }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center py-5" *ngIf="isLoading">
+    <div class="spinner-border text-warning" role="status">
+        <span class="visually-hidden">Carregando...</span>
+    </div>
+    <p class="mt-3">Carregando perfil do proprietário...</p>
+</div>
+
+<div class="container text-center py-5" *ngIf="error">
+    <i class="bi bi-exclamation-triangle display-1 text-danger"></i>
+    <h3 class="mt-3">Ops! Não foi possível encontrar este proprietário.</h3>
+    <p class="text-muted">O proprietário que você está procurando não existe ou foi removido.</p>
+    <a routerLink="/" class="btn btn-primary mt-3">Voltar para a página inicial</a>
+</div>

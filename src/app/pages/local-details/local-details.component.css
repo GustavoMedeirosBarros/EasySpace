@@ -1,0 +1,114 @@
+.image-gallery {
+    height: 400px;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.main-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+    z-index: 10;
+}
+
+.prev-btn {
+    left: 15px;
+}
+
+.next-btn {
+    right: 15px;
+}
+
+.price-tag {
+    min-width: 150px;
+}
+
+.price-unit {
+    font-size: 1rem;
+    font-weight: normal;
+    margin-left: 5px;
+}
+
+.rating {
+    font-size: 1.1rem;
+}
+
+.ratings-chart {
+    min-width: 150px;
+}
+
+.comment-avatar {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.comment-preview {
+    display: inline-block;
+}
+
+.comment-preview .comment-avatar {
+    width: 40px;
+    height: 40px;
+}
+
+.comment-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.comment-rating {
+    font-size: 0.8rem;
+}
+
+.owner-avatar {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+}
+
+.amenities-list,
+.rules-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.amenities-list li,
+.rules-list li {
+    margin-bottom: 8px;
+}
+
+.map-container {
+    height: 250px;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.map-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@media (max-width: 767.98px) {
+    .image-gallery {
+        height: 250px;
+    }
+
+    .price-tag {
+        text-align: left;
+        margin-top: 15px;
+    }
+}

@@ -1,0 +1,67 @@
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm my-5">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <img src="Logo.png" alt="Easy Space" height="60" class="mb-3">
+                        <h4>Entrar na sua conta</h4>
+                    </div>
+
+                    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                        <div class="alert alert-danger" *ngIf="errorMessage">
+                            {{ errorMessage }}
+                        </div>
+
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" formControlName="email"
+                                [ngClass]="{'is-invalid': loginForm.get('email')?.invalid && loginForm.get('email')?.touched}">
+                            <div class="invalid-feedback" *ngIf="loginForm.get('email')?.errors?.['required']">
+                                Email é obrigatório
+                            </div>
+                            <div class="invalid-feedback" *ngIf="loginForm.get('email')?.errors?.['email']">
+                                Formato de email inválido
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="senha" class="form-label">Senha</label>
+                            <input type="password" class="form-control" id="senha" formControlName="senha"
+                                [ngClass]="{'is-invalid': loginForm.get('senha')?.invalid && loginForm.get('senha')?.touched}">
+                            <div class="invalid-feedback" *ngIf="loginForm.get('senha')?.errors?.['required']">
+                                Senha é obrigatória
+                            </div>
+                            <div class="invalid-feedback" *ngIf="loginForm.get('senha')?.errors?.['minlength']">
+                                Senha deve ter pelo menos 6 caracteres
+                            </div>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">Lembrar de mim</label>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid || isLoading">
+                                <span class="spinner-border spinner-border-sm me-2" *ngIf="isLoading"></span>
+                                Entrar
+                            </button>
+                        </div>
+
+                        <div class="text-center mt-3">
+                            <a href="#" class="text-decoration-none">Esqueceu sua senha?</a>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <p>Não tem uma conta? <a routerLink="/register" class="text-decoration-none">Cadastre-se</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
