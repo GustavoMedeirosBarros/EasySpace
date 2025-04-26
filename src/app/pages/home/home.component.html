@@ -1,1 +1,85 @@
-<div class="container mt-4 mb-5"></div>
+<div class="container-fluid home-container">
+    <!-- Carrossel com Links -->
+    <div class="row">
+        <div class="col-12 px-0">
+            <ngb-carousel [showNavigationArrows]="true" [showNavigationIndicators]="true" [interval]="5000">
+                <ng-template ngbSlide *ngFor="let image of carouselImages">
+                    <a [routerLink]="image.link">
+                        <div class="carousel-image-container">
+                            <img [src]="image.path" [alt]="image.alt" class="d-block w-100">
+                        </div>
+                    </a>
+                </ng-template>
+            </ngb-carousel>
+        </div>
+    </div>
+<!-- Espaços -->
+<div class="row section featured-spaces">
+    <div class="col-12 section-header">
+        <h2>Destaques <i class="bi bi-star-fill"></i></h2>
+        <a routerLink="/explorar" class="btn btn-link">Ver todos</a>
+    </div>
+    
+    <div class="col-12">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <div class="col" *ngFor="let local of featuredLocais">
+                <div class="card listing-card h-100" [routerLink]="['/local', local.id_local]">
+                    <div class="position-relative">
+                        <img [src]="local.imagem_local" class="card-img-top" [alt]="local.nome_local">
+                        <button class="btn btn-sm btn-light rounded-circle favorite-btn"
+                                (click)="toggleFavorite(local, $event)">
+                            <i class="bi"
+                               [ngClass]="isFavorito(local.id_local) ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
+                        </button>
+                        <span class="badge bg-warning category-badge">
+                            {{ getLocalCategoryName(local) }}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="card-title mb-0">{{ local.nome_local }}</h5>
+                            <div class="rating">
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <span class="ms-1">{{ local.avaliacao.toFixed(1) }}</span>
+                            </div>
+                        </div>
+                        <p class="card-text text-muted small mb-2">
+                            <i class="bi bi-geo-alt"></i> {{ local.cidade_local }}, {{ local.estado_local }}
+                        </p>
+                        <p class="card-text fw-bold" *ngIf="local.valor > 0">
+                            R$ {{ local.valor.toFixed(2) }} <span class="fw-normal">{{ getLocacaoText(local) }}</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Categorias -->
+<div class="row section categories-section">
+    <div class="col-12 section-header">
+        <h2>Categorias Populares</h2>
+        <a routerLink="/explorar" class="btn btn-link">Explorar todas</a>
+    </div>
+    
+    <div class="col-12">
+        <div class="row g-3">
+            <div class="col-md-4" *ngFor="let category of popularCategories">
+                <div class="category-card" (click)="navigateToCategory(category.id)">
+                    <div class="category-icon">
+                        <i [class]="'bi ' + category.icon"></i>
+                    </div>
+                    <h3>{{ category.name }}</h3>
+                    <p class="text-muted small">Ver espaços</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+   <!-- Imagem Destaque -->
+<div class="row justify-content-center mt-5 mb-5">
+    <div class="col-12 col-md-10 col-lg-8 text-center">
+        <a routerLink="#"><img src="destaque1.png" alt="Espaço em destaque" class="img-fluid rounded featured-end-image"></a>    <!-- Colocar caminho da página "tubo aluguel" -->
+    </div>
+</div>

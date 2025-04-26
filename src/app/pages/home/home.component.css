@@ -1,0 +1,181 @@
+.carousel-image-container {
+    position: relative;
+    cursor: pointer;
+}
+
+.carousel-image-container:hover {
+    opacity: 0.9;
+}
+
+/* Remove o sublinhado do link */
+.carousel a {
+    text-decoration: none;
+}
+
+/* Seções */
+.section {
+    padding: 3rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.section-header h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.section-header .btn-link {
+    color: #ffc107;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.section-header .btn-link:hover {
+    text-decoration: underline;
+}
+
+/* Cards de Espaços (mantendo o mesmo estilo do explorar) */
+.listing-card {
+    transition: transform 0.2s;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid #e9ecef;
+    height: 100%;
+}
+
+.listing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-img-top {
+    height: 180px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.listing-card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #212529;
+}
+
+.favorite-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.9;
+    z-index: 10;
+    background-color: white;
+    border: none;
+}
+
+.category-badge {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background-color: #ffc107;
+    color: #ffffff;
+}
+
+.rating {
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+}
+
+/* Categorias */
+.category-card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+    height: 100%;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    border-color: #ffc107;
+}
+
+.category-icon {
+    font-size: 2rem;
+    color: #ffc107;
+    margin-bottom: 1rem;
+}
+
+.category-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+
+.featured-end-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.featured-end-image:hover {
+    transform: scale(1.02);
+}
+/* Responsividade */
+@media (max-width: 767.98px) {
+    
+    .section-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .category-card {
+        padding: 1rem;
+    }
+    
+    .cta-section {
+        text-align: center;
+    }
+    
+    .cta-section .btn {
+        margin-top: 1rem;
+        width: 100%;
+    }
+}
+
+/* Efeitos de hover */
+.hover-effect {
+    transition: all 0.3s ease;
+}
+
+.hover-effect:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
