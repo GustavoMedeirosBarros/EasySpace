@@ -1,8 +1,8 @@
 <div class="container-fluid home-container">
-    <!-- Carrossel com Links -->
     <div class="row">
         <div class="col-12 px-0">
-            <ngb-carousel [showNavigationArrows]="true" [showNavigationIndicators]="true" [interval]="5000">
+            <ngb-carousel [showNavigationArrows]="true" [showNavigationIndicators]="true" [interval]="5000"
+                class="reduced-height-carousel">
                 <ng-template ngbSlide *ngFor="let image of carouselImages">
                     <a [routerLink]="image.link">
                         <div class="carousel-image-container">
@@ -13,73 +13,162 @@
             </ngb-carousel>
         </div>
     </div>
-<!-- Espaços -->
-<div class="row section featured-spaces">
-    <div class="col-12 section-header">
-        <h2>Destaques <i class="bi bi-star-fill"></i></h2>
-        <a routerLink="/explorar" class="btn btn-link">Ver todos</a>
-    </div>
-    
-    <div class="col-12">
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            <div class="col" *ngFor="let local of featuredLocais">
-                <div class="card listing-card h-100" [routerLink]="['/local', local.id_local]">
-                    <div class="position-relative">
-                        <img [src]="local.imagem_local" class="card-img-top" [alt]="local.nome_local">
-                        <button class="btn btn-sm btn-light rounded-circle favorite-btn"
-                                (click)="toggleFavorite(local, $event)">
-                            <i class="bi"
-                               [ngClass]="isFavorito(local.id_local) ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
-                        </button>
-                        <span class="badge bg-warning category-badge">
-                            {{ getLocalCategoryName(local) }}
-                        </span>
+
+
+
+    <!-- Categorias -->
+    <div class="row section categories-section">
+        <div class="col-12 section-header">
+            <h2>Categorias Populares</h2>
+            <a routerLink="/explorar" class="btn btn-link">Explorar todas</a>
+        </div>
+
+        <div class="col-12">
+            <div class="row g-3">
+                <div class="col-md-3" *ngFor="let category of popularCategories">
+                    <div class="category-card" (click)="navigateToCategory(category.id)">
+                        <div class="category-icon">
+                            <i [class]="'bi ' + category.icon"></i>
+                        </div>
+                        <h3>{{ category.name }}</h3>
+                        <p class="text-muted small">{{ category.description }}</p>
+                        <button class="btn btn-sm btn-outline-primary mt-2">Ver espaços</button>
                     </div>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h5 class="card-title mb-0">{{ local.nome_local }}</h5>
-                            <div class="rating">
-                                <i class="bi bi-star-fill text-warning"></i>
-                                <span class="ms-1">{{ local.avaliacao.toFixed(1) }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Espaços em destaque -->
+    <div class="row section featured-spaces">
+        <div class="col-12 section-header">
+            <h2>Destaques <i class="bi bi-star-fill"></i></h2>
+            <a routerLink="/explorar" class="btn btn-link">Ver todos</a>
+        </div>
+
+        <div class="col-12">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                <div class="col" *ngFor="let local of featuredLocais">
+                    <div class="card listing-card h-100" [routerLink]="['/local', local.id_local]">
+                        <div class="position-relative">
+                            <img [src]="local.imagem_local" class="card-img-top" [alt]="local.nome_local">
+                            <button class="btn btn-sm btn-light rounded-circle favorite-btn"
+                                (click)="toggleFavorite(local, $event)">
+                                <i class="bi"
+                                    [ngClass]="isFavorito(local.id_local) ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
+                            </button>
+                            <span class="badge bg-warning category-badge">
+                                {{ getLocalCategoryName(local) }}
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="card-title mb-0">{{ local.nome_local }}</h5>
+                                <div class="rating">
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <span class="ms-1">{{ local.avaliacao.toFixed(1) }}</span>
+                                </div>
+                            </div>
+                            <p class="card-text text-muted small mb-2">
+                                <i class="bi bi-geo-alt"></i> {{ local.cidade_local }}, {{ local.estado_local }}
+                            </p>
+                            <p class="card-text fw-bold" *ngIf="local.valor > 0">
+                                R$ {{ local.valor.toFixed(2) }} <span class="fw-normal">{{ getLocacaoText(local)
+                                    }}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Adicionado: Espaços recentes -->
+    <div class="row section recent-spaces">
+        <div class="col-12 section-header">
+            <h2>Adicionados Recentemente <i class="bi bi-clock"></i></h2>
+            <a routerLink="/explorar" class="btn btn-link">Ver todos</a>
+        </div>
+
+        <div class="col-12">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <div class="col" *ngFor="let local of recentLocais">
+                    <div class="card listing-card h-100" [routerLink]="['/local', local.id_local]">
+                        <div class="position-relative">
+                            <img [src]="local.imagem_local" class="card-img-top" [alt]="local.nome_local">
+                            <button class="btn btn-sm btn-light rounded-circle favorite-btn"
+                                (click)="toggleFavorite(local, $event)">
+                                <i class="bi"
+                                    [ngClass]="isFavorito(local.id_local) ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
+                            </button>
+                            <div class="ribbon ribbon-top-right"><span>Novo</span></div>
+                            <span class="badge bg-warning category-badge">
+                                {{ getLocalCategoryName(local) }}
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="card-title mb-0">{{ local.nome_local }}</h5>
+                                <div class="rating">
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <span class="ms-1">{{ local.avaliacao.toFixed(1) }}</span>
+                                </div>
+                            </div>
+                            <p class="card-text text-muted small mb-2">
+                                <i class="bi bi-geo-alt"></i> {{ local.cidade_local }}, {{ local.estado_local }}
+                            </p>
+                            <p class="card-text fw-bold" *ngIf="local.valor > 0">
+                                R$ {{ local.valor.toFixed(2) }} <span class="fw-normal">{{ getLocacaoText(local)
+                                    }}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Depoimentos -->
+    <div class="row section testimonials-section">
+        <div class="col-12 text-center mb-4">
+            <h2 class="section-title">O que dizem nossos usuários</h2>
+        </div>
+
+        <div class="col-12">
+            <div class="row">
+                <div class="col-md-4 mb-4" *ngFor="let testimonial of testimonials">
+                    <div class="testimonial-card">
+                        <div class="testimonial-rating mb-2">
+                            <i class="bi bi-star-fill text-warning"
+                                *ngFor="let star of getStarArray(testimonial.rating)"></i>
+                        </div>
+                        <p class="testimonial-text">"{{ testimonial.text }}"</p>
+                        <div class="testimonial-user d-flex align-items-center mt-3">
+                            <img [src]="testimonial.image" alt="{{ testimonial.name }}"
+                                class="testimonial-avatar rounded-circle me-3">
+                            <div>
+                                <h5 class="mb-0">{{ testimonial.name }}</h5>
+                                <p class="text-muted small mb-0">{{ testimonial.role }}</p>
                             </div>
                         </div>
-                        <p class="card-text text-muted small mb-2">
-                            <i class="bi bi-geo-alt"></i> {{ local.cidade_local }}, {{ local.estado_local }}
-                        </p>
-                        <p class="card-text fw-bold" *ngIf="local.valor > 0">
-                            R$ {{ local.valor.toFixed(2) }} <span class="fw-normal">{{ getLocacaoText(local) }}</span>
-                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Categorias -->
-<div class="row section categories-section">
-    <div class="col-12 section-header">
-        <h2>Categorias Populares</h2>
-        <a routerLink="/explorar" class="btn btn-link">Explorar todas</a>
-    </div>
-    
-    <div class="col-12">
-        <div class="row g-3">
-            <div class="col-md-4" *ngFor="let category of popularCategories">
-                <div class="category-card" (click)="navigateToCategory(category.id)">
-                    <div class="category-icon">
-                        <i [class]="'bi ' + category.icon"></i>
-                    </div>
-                    <h3>{{ category.name }}</h3>
-                    <p class="text-muted small">Ver espaços</p>
+    <!-- Call to Action -->
+    <div class="row section cta-section">
+        <div class="col-12 col-md-8 offset-md-2 text-center">
+            <div class="cta-card">
+                <h2>Tem um espaço para alugar?</h2>
+                <p class="mb-4">Cadastre seu espaço no Easy Space e comece a receber reservas hoje mesmo!</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a routerLink="/criar-anuncio" class="btn btn-primary btn-lg">Anunciar meu espaço</a>
+                    <a routerLink="/como-funciona" class="btn btn-outline-primary btn-lg">Saiba mais</a>
                 </div>
             </div>
         </div>
     </div>
-</div>
-   <!-- Imagem Destaque -->
-<div class="row justify-content-center mt-5 mb-5">
-    <div class="col-12 col-md-10 col-lg-8 text-center">
-        <a routerLink="#"><img src="destaque1.png" alt="Espaço em destaque" class="img-fluid rounded featured-end-image"></a>    <!-- Colocar caminho da página "tubo aluguel" -->
-    </div>
+
 </div>

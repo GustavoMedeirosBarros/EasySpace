@@ -147,24 +147,6 @@ export class MeusAnunciosComponent implements OnInit {
     }
   }
 
-  duplicarAnuncio(local: Local): void {
-    const novoLocal: Local = {
-      ...local,
-      id_local: 0,
-      nome_local: `${local.nome_local} (Cópia)`,
-    }
-
-    this.mockDataService.addLocal(novoLocal)
-
-    this.carregarAnuncios()
-
-    this.successMessage = "Anúncio duplicado com sucesso!"
-
-
-    setTimeout(() => {
-      this.successMessage = null
-    }, 5000)
-  }
 
   getLocacaoText(local: Local): string {
     if (local.tipo_locacao === "hora") {

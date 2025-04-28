@@ -1,0 +1,525 @@
+<div class="container mt-4 mb-5">
+    <div class="alert alert-success alert-dismissible fade show" *ngIf="successMessage">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        {{ successMessage }}
+        <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+    </div>
+
+    <div class="alert alert-danger alert-dismissible fade show" *ngIf="errorMessage">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        {{ errorMessage }}
+        <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+    </div>
+
+    delete-- Loading spinner -->
+    <div class="text-center py-5" *ngIf="isLoading">
+        <div class="spinner-border text-warning" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+        <p class="mt-3">Carregando informações do local...</p>
+    </div>
+
+    <div *ngIf="!isLoading && local">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="mb-2">
+                    <i class="bi bi-calendar-check me-2 text-warning"></i>
+                    Reservar {{ local.nome_local }}
+                </h2>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
+                        <li class="breadcrumb-item"><a [routerLink]="['/local', local.id_local]">{{ local.nome_local
+                                }}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Reservar</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="progress-steps">
+                    <div class="step" [ngClass]="{'active': currentStep >= 1, 'completed': currentStep > 1}">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Detalhes da reserva</div>
+                    </div>
+                    <div class="step-line" [ngClass]="{'active': currentStep > 1}"></div>
+                    <div class="step" [ngClass]="{'active': currentStep >= 2, 'completed': currentStep > 2}">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Pagamento</div>
+                    </div>
+                    <div class="step-line" [ngClass]="{'active': currentStep > 2}"></div>
+                    <div class="step" [ngClass]="{'active': currentStep >= 3}">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Confirmação</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="currentStep === 1">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h3 class="card-title mb-4">Detalhes da reserva</h3>
+
+                            <form [formGroup]="reservaForm">
+                                <div *ngIf="local.tipo_locacao === 'hora'">
+                                    <div class="mb-3">
+                                        <label for="data_inicio" class="form-label">Data</label>
+                                        <mat-form-field appearance="fill" class="w-100">
+                                            <mat-label>Escolha uma data</mat-label>
+                                            <input matInput [matDatepicker]="picker" [matDatepickerFilter]="dateFilter"
+                                                [min]="minDate" [max]="maxDate"
+                                                (dateChange)="onDateSelection($event, 'data_inicio')"
+                                                placeholder="DD/MM/AAAA">
+                                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                            <mat-datepicker #picker></mat-datepicker>
+                                        </mat-form-field>
+                                        <div class="invalid-feedback"
+                                            *ngIf="reservaForm.get('data_inicio')?.invalid && reservaForm.get('data_inicio')?.touched">
+                                            Data é obrigatória
+                                        </div>
+
+                                        <div class="form-check mt-2">
+                                            <input class="form-check-input" type="checkbox" id="multiplos_dias"
+                                                formControlName="multiplos_dias">
+                                            <label class="form-check-label" for="multiplos_dias">
+                                                Reservar por mais de um dia
+                                            </label>
+                                        </div>
+
+                                        <div *ngIf="mostrarDataFim" class="mt-3">
+                                            <label for="data_fim" class="form-label">Data de término</label>
+                                            <mat-form-field appearance="fill" class="w-100">
+                                                <mat-label>Escolha a data de término</mat-label>
+                                                <input matInput [matDatepicker]="pickerEnd"
+                                                    [matDatepickerFilter]="dateFilter" [min]="getMinDateForEndDate()"
+                                                    [max]="maxDate" (dateChange)="onDateSelection($event, 'data_fim')"
+                                                    placeholder="DD/MM/AAAA">
+                                                <mat-datepicker-toggle matSuffix
+                                                    [for]="pickerEnd"></mat-datepicker-toggle>
+                                                <mat-datepicker #pickerEnd></mat-datepicker>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div class="calendar-legend mt-2">
+                                            <span class="available-date me-3"><i class="bi bi-circle-fill me-1"></i>
+                                                Disponível</span>
+                                            <span class="unavailable-date"><i class="bi bi-circle-fill me-1"></i>
+                                                Indisponível</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="horario_inicio" class="form-label">Horário de início</label>
+                                            <select class="form-select" id="horario_inicio"
+                                                formControlName="horario_inicio"
+                                                [ngClass]="{'is-invalid': reservaForm.get('horario_inicio')?.invalid && reservaForm.get('horario_inicio')?.touched}">
+                                                <option value="">Selecione</option>
+                                                <option *ngFor="let horario of horariosDisponiveis" [value]="horario">{{
+                                                    horario }}</option>
+                                            </select>
+                                            <div class="invalid-feedback">
+                                                Horário de início é obrigatório
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="horario_fim" class="form-label">Horário de término</label>
+                                            <select class="form-select" id="horario_fim" formControlName="horario_fim"
+                                                [ngClass]="{'is-invalid': reservaForm.get('horario_fim')?.invalid && reservaForm.get('horario_fim')?.touched}">
+                                                <option value="">Selecione</option>
+                                                <option *ngFor="let horario of horariosDisponiveis" [value]="horario">{{
+                                                    horario }}</option>
+                                            </select>
+                                            <div class="invalid-feedback">
+                                                Horário de término é obrigatório
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div *ngIf="local.tipo_locacao === 'dia'">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="data_inicio" class="form-label">Data de início</label>
+                                            <mat-form-field appearance="fill" class="w-100">
+                                                <mat-label>Escolha a data de início</mat-label>
+                                                <input matInput [matDatepicker]="pickerStart"
+                                                    [matDatepickerFilter]="dateFilter" [min]="minDate" [max]="maxDate"
+                                                    (dateChange)="onDateSelection($event, 'data_inicio')"
+                                                    placeholder="DD/MM/AAAA">
+                                                <mat-datepicker-toggle matSuffix
+                                                    [for]="pickerStart"></mat-datepicker-toggle>
+                                                <mat-datepicker #pickerStart></mat-datepicker>
+                                            </mat-form-field>
+                                            <div class="invalid-feedback"
+                                                *ngIf="reservaForm.get('data_inicio')?.invalid && reservaForm.get('data_inicio')?.touched">
+                                                Data de início é obrigatória
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="data_fim" class="form-label">Data de término</label>
+                                            <mat-form-field appearance="fill" class="w-100">
+                                                <mat-label>Escolha a data de término</mat-label>
+                                                <input matInput [matDatepicker]="pickerEnd"
+                                                    [matDatepickerFilter]="dateFilter" [min]="getMinDateForEndDate()"
+                                                    [max]="maxDate" (dateChange)="onDateSelection($event, 'data_fim')"
+                                                    placeholder="DD/MM/AAAA">
+                                                <mat-datepicker-toggle matSuffix
+                                                    [for]="pickerEnd"></mat-datepicker-toggle>
+                                                <mat-datepicker #pickerEnd></mat-datepicker>
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+                                    <div class="calendar-legend mb-3">
+                                        <span class="available-date me-3"><i class="bi bi-circle-fill me-1"></i>
+                                            Disponível</span>
+                                        <span class="unavailable-date"><i class="bi bi-circle-fill me-1"></i>
+                                            Indisponível</span>
+                                    </div>
+                                </div>
+
+                                <div *ngIf="local.tipo_locacao === 'mes'">
+                                    <div class="mb-3">
+                                        <label for="data_inicio" class="form-label">Data de início</label>
+                                        <mat-form-field appearance="fill" class="w-100">
+                                            <mat-label>Escolha a data de início</mat-label>
+                                            <input matInput [matDatepicker]="pickerMonth"
+                                                [matDatepickerFilter]="dateFilter" [min]="minDate" [max]="maxDate"
+                                                (dateChange)="onDateSelection($event, 'data_inicio')"
+                                                placeholder="DD/MM/AAAA">
+                                            <mat-datepicker-toggle matSuffix
+                                                [for]="pickerMonth"></mat-datepicker-toggle>
+                                            <mat-datepicker #pickerMonth></mat-datepicker>
+                                        </mat-form-field>
+                                        <div class="invalid-feedback"
+                                            *ngIf="reservaForm.get('data_inicio')?.invalid && reservaForm.get('data_inicio')?.touched">
+                                            Data de início é obrigatória
+                                        </div>
+
+                                        <div class="form-check mt-2">
+                                            <input class="form-check-input" type="checkbox" id="multiplos_dias"
+                                                formControlName="multiplos_dias">
+                                            <label class="form-check-label" for="multiplos_dias">
+                                                Reservar por mais de um mês
+                                            </label>
+                                        </div>
+
+                                        <div *ngIf="mostrarDataFim" class="mt-3">
+                                            <label for="data_fim" class="form-label">Data de término</label>
+                                            <mat-form-field appearance="fill" class="w-100">
+                                                <mat-label>Escolha a data de término</mat-label>
+                                                <input matInput [matDatepicker]="pickerMonthEnd"
+                                                    [matDatepickerFilter]="dateFilter" [min]="getMinDateForEndDate()"
+                                                    [max]="maxDate" (dateChange)="onDateSelection($event, 'data_fim')"
+                                                    placeholder="DD/MM/AAAA">
+                                                <mat-datepicker-toggle matSuffix
+                                                    [for]="pickerMonthEnd"></mat-datepicker-toggle>
+                                                <mat-datepicker #pickerMonthEnd></mat-datepicker>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div class="calendar-legend mt-2">
+                                            <span class="available-date me-3"><i class="bi bi-circle-fill me-1"></i>
+                                                Disponível</span>
+                                            <span class="unavailable-date"><i class="bi bi-circle-fill me-1"></i>
+                                                Indisponível</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="quantidade_pessoas" class="form-label">Quantidade de pessoas</label>
+                                    <input type="number" class="form-control" id="quantidade_pessoas"
+                                        formControlName="quantidade_pessoas"
+                                        [ngClass]="{'is-invalid': reservaForm.get('quantidade_pessoas')?.invalid && reservaForm.get('quantidade_pessoas')?.touched}"
+                                        min="1" [max]="local.capacidade || 100">
+                                    <div class="invalid-feedback"
+                                        *ngIf="reservaForm.get('quantidade_pessoas')?.errors?.['required']">
+                                        Quantidade de pessoas é obrigatória
+                                    </div>
+                                    <div class="invalid-feedback"
+                                        *ngIf="reservaForm.get('quantidade_pessoas')?.errors?.['min']">
+                                        Quantidade de pessoas deve ser pelo menos 1
+                                    </div>
+                                    <div class="invalid-feedback"
+                                        *ngIf="reservaForm.get('quantidade_pessoas')?.errors?.['max']">
+                                        Quantidade de pessoas excede a capacidade do local
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="observacoes" class="form-label">Observações (opcional)</label>
+                                    <textarea class="form-control" id="observacoes" formControlName="observacoes"
+                                        rows="3"
+                                        placeholder="Informe detalhes adicionais ou requisitos especiais para sua reserva"></textarea>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card mb-4 summary-card">
+                        <div class="card-body">
+                            <h4 class="card-title mb-3">Resumo da reserva</h4>
+
+                            <div class="d-flex align-items-center mb-3">
+                                <img [src]="local.imagem_local" alt="Imagem do local" class="summary-image me-3">
+                                <div>
+                                    <h5 class="mb-1">{{ local.nome_local }}</h5>
+                                    <p class="text-muted mb-0">{{ local.cidade_local }}, {{ local.estado_local }}</p>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="summary-item d-flex justify-content-between mb-2">
+                                <span>Valor {{ getLocacaoText() }}</span>
+                                <span>{{ formatarPreco(local.valor) }}</span>
+                            </div>
+
+                            <div class="summary-item d-flex justify-content-between mb-2"
+                                *ngIf="reservaForm.value.data_inicio">
+                                <span>Período</span>
+                                <span>{{ getPeriodoReserva() }}</span>
+                            </div>
+
+                            <div class="summary-item d-flex justify-content-between mb-2">
+                                <span>Taxa de serviço</span>
+                                <span>{{ formatarPreco(valorTotal * 0.1) }}</span>
+                            </div>
+
+                            <hr>
+
+                            <div class="summary-item d-flex justify-content-between mb-3">
+                                <span class="fw-bold">Total</span>
+                                <span class="fw-bold">{{ formatarPreco(valorTotal) }}</span>
+                            </div>
+
+                            <button class="btn btn-warning w-100" (click)="nextStep()">
+                                Continuar para pagamento
+                            </button>
+
+                            <div class="mt-3 text-center">
+                                <a [routerLink]="['/local', local.id_local]" class="btn btn-link">Voltar para o
+                                    anúncio</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card info-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Informações importantes</h5>
+                            <ul class="info-list">
+                                <li><i class="bi bi-shield-check me-2"></i>Pagamento seguro</li>
+                                <li><i class="bi bi-calendar-x me-2"></i>Cancelamento gratuito até 7 dias antes</li>
+                                <li><i class="bi bi-chat-dots me-2"></i>Suporte 24/7</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="currentStep === 2">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h3 class="card-title mb-4">Informações de pagamento</h3>
+
+                            <form [formGroup]="pagamentoForm">
+                                <div class="mb-3">
+                                    <label for="numero_cartao" class="form-label">Número do cartão</label>
+                                    <input type="text" class="form-control" id="numero_cartao"
+                                        formControlName="numero_cartao" placeholder="1234 5678 9012 3456"
+                                        [ngClass]="{'is-invalid': pagamentoForm.get('numero_cartao')?.invalid && pagamentoForm.get('numero_cartao')?.touched}">
+                                    <div class="invalid-feedback">
+                                        Número do cartão inválido. Digite os 16 dígitos do cartão.
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="nome_titular" class="form-label">Nome do titular</label>
+                                    <input type="text" class="form-control" id="nome_titular"
+                                        formControlName="nome_titular" placeholder="Nome como está no cartão"
+                                        [ngClass]="{'is-invalid': pagamentoForm.get('nome_titular')?.invalid && pagamentoForm.get('nome_titular')?.touched}">
+                                    <div class="invalid-feedback">
+                                        Nome do titular é obrigatório
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="validade" class="form-label">Validade</label>
+                                        <input type="text" class="form-control" id="validade" formControlName="validade"
+                                            placeholder="MM/AA"
+                                            [ngClass]="{'is-invalid': pagamentoForm.get('validade')?.invalid && pagamentoForm.get('validade')?.touched}">
+                                        <div class="invalid-feedback">
+                                            Validade inválida. Use o formato MM/AA
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="cvv" class="form-label">CVV</label>
+                                        <input type="text" class="form-control" id="cvv" formControlName="cvv"
+                                            placeholder="123"
+                                            [ngClass]="{'is-invalid': pagamentoForm.get('cvv')?.invalid && pagamentoForm.get('cvv')?.touched}">
+                                        <div class="invalid-feedback">
+                                            CVV inválido
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="parcelas" class="form-label">Parcelas</label>
+                                    <select class="form-select" id="parcelas" formControlName="parcelas"
+                                        [ngClass]="{'is-invalid': pagamentoForm.get('parcelas')?.invalid && pagamentoForm.get('parcelas')?.touched}">
+                                        <option [value]="1">1x de {{ formatarPreco(valorTotal) }} sem juros</option>
+                                        <option [value]="2">2x de {{ formatarPreco(valorTotal / 2) }} sem juros</option>
+                                        <option [value]="3">3x de {{ formatarPreco(valorTotal / 3) }} sem juros</option>
+                                        <option [value]="4">4x de {{ formatarPreco(valorTotal / 4) }} sem juros</option>
+                                        <option [value]="5">5x de {{ formatarPreco(valorTotal / 5) }} sem juros</option>
+                                        <option [value]="6">6x de {{ formatarPreco(valorTotal / 6) }} sem juros</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="aceito_termos"
+                                        formControlName="aceito_termos"
+                                        [ngClass]="{'is-invalid': pagamentoForm.get('aceito_termos')?.invalid && pagamentoForm.get('aceito_termos')?.touched}">
+                                    <label class="form-check-label" for="aceito_termos">
+                                        Concordo com os <a href="#" target="_blank">termos e condições</a> e <a href="#"
+                                            target="_blank">política de privacidade</a>
+                                    </label>
+                                    <div class="invalid-feedback">
+                                        Você deve aceitar os termos para continuar
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card mb-4 summary-card">
+                        <div class="card-body">
+                            <h4 class="card-title mb-3">Resumo da reserva</h4>
+
+                            <div class="d-flex align-items-center mb-3">
+                                <img [src]="local.imagem_local" alt="Imagem do local" class="summary-image me-3">
+                                <div>
+                                    <h5 class="mb-1">{{ local.nome_local }}</h5>
+                                    <p class="text-muted mb-0">{{ local.cidade_local }}, {{ local.estado_local }}</p>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="summary-item d-flex justify-content-between mb-2">
+                                <span>Valor {{ getLocacaoText() }}</span>
+                                <span>{{ formatarPreco(local.valor) }}</span>
+                            </div>
+
+                            <div class="summary-item d-flex justify-content-between mb-2"
+                                *ngIf="reservaForm.value.data_inicio">
+                                <span>Período</span>
+                                <span>{{ getPeriodoReserva() }}</span>
+                            </div>
+
+                            <div class="summary-item d-flex justify-content-between mb-2">
+                                <span>Taxa de serviço</span>
+                                <span>{{ formatarPreco(valorTotal * 0.1) }}</span>
+                            </div>
+
+                            <hr>
+
+                            <div class="summary-item d-flex justify-content-between mb-3">
+                                <span class="fw-bold">Total</span>
+                                <span class="fw-bold">{{ formatarPreco(valorTotal) }}</span>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-warning" (click)="nextStep()" [disabled]="isSubmitting">
+                                    <span class="spinner-border spinner-border-sm me-2" *ngIf="isSubmitting"></span>
+                                    Finalizar pagamento
+                                </button>
+                                <button class="btn btn-outline-secondary" (click)="prevStep()"
+                                    [disabled]="isSubmitting">
+                                    Voltar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card info-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Pagamento seguro</h5>
+                            <p class="mb-3">Seus dados de pagamento são protegidos por criptografia de ponta a ponta.
+                            </p>
+                            <div class="payment-methods">
+                                <i class="bi bi-credit-card me-2 fs-4"></i>
+                                <i class="bi bi-credit-card-2-front me-2 fs-4"></i>
+                                <i class="bi bi-credit-card-2-back me-2 fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="currentStep === 3">
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                    <div class="card confirmation-card mb-4">
+                        <div class="card-body text-center">
+                            <div class="confirmation-icon">
+                                <i class="bi bi-check-circle-fill"></i>
+                            </div>
+                            <h3 class="card-title mb-3">Reserva confirmada!</h3>
+                            <p class="mb-4">Sua reserva para <strong>{{ local.nome_local }}</strong> foi confirmada com
+                                sucesso.</p>
+
+                            <div class="confirmation-details">
+                                <div class="row mb-3">
+                                    <div class="col-md-6 text-md-end fw-bold">Local:</div>
+                                    <div class="col-md-6 text-md-start">{{ local.nome_local }}</div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6 text-md-end fw-bold">Período:</div>
+                                    <div class="col-md-6 text-md-start">{{ getPeriodoReserva() }}</div>
+                                </div>
+                                <div class="row mb-3" *ngIf="local.tipo_locacao === 'hora'">
+                                    <div class="col-md-6 text-md-end fw-bold">Horário:</div>
+                                    <div class="col-md-6 text-md-start">{{ reservaForm.value.horario_inicio }} às {{
+                                        reservaForm.value.horario_fim }}</div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6 text-md-end fw-bold">Valor total:</div>
+                                    <div class="col-md-6 text-md-start">{{ formatarPreco(valorTotal) }}</div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                                <button class="btn btn-warning" (click)="irParaChat()">
+                                    <i class="bi bi-chat-dots me-2"></i>Conversar com o proprietário
+                                </button>
+                                <button class="btn btn-outline-primary" (click)="irParaMinhasReservas()">
+                                    <i class="bi bi-calendar-check me-2"></i>Ver minhas reservas
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <a [routerLink]="['/']" class="btn btn-link">Voltar para a página inicial</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

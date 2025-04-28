@@ -19,4 +19,5 @@ export interface Local {
     latitude?: number
     longitude?: number
     comodidades?: string[]
+    capacidade?: string
 }

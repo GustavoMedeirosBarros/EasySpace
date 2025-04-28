@@ -1,0 +1,178 @@
+<div class="container mt-4 mb-5">
+    <div class="alert alert-success alert-dismissible fade show" *ngIf="successMessage">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        {{ successMessage }}
+        <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+    </div>
+
+    <div class="alert alert-danger alert-dismissible fade show" *ngIf="errorMessage">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        {{ errorMessage }}
+        <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="bi bi-calendar-check me-2 text-warning"></i>
+                    Minhas Reservas
+                </h2>
+            </div>
+
+            <div class="text-center py-5" *ngIf="isLoading">
+                <div class="spinner-border text-warning" role="status">
+                    <span class="visually-hidden">Carregando...</span>
+                </div>
+                <p class="mt-3">Carregando suas reservas...</p>
+            </div>
+
+            <div class="text-center py-5" *ngIf="!isLoading && !isLoggedIn">
+                <i class="bi bi-person-lock display-1 text-muted"></i>
+                <h3 class="mt-3">Você precisa estar logado para ver suas reservas</h3>
+                <p class="text-muted">Faça login ou crie uma conta para gerenciar suas reservas</p>
+                <div class="mt-4">
+                    <a routerLink="/login" [queryParams]="{redirect: 'minhas-reservas'}"
+                        class="btn btn-warning me-2">Entrar</a>
+                    <a routerLink="/register" class="btn btn-outline-warning">Criar conta</a>
+                </div>
+            </div>
+
+            <div *ngIf="!isLoading && isLoggedIn">
+                <div class="row mb-4">
+                    <div class="col-md-8 mb-3 mb-md-0">
+                        <div class="btn-group">
+                            <button class="btn" [class.btn-warning]="filtroAtual === 'todas'"
+                                [class.btn-outline-warning]="filtroAtual !== 'todas'"
+                                (click)="filtrarReservas('todas')">
+                                Todas
+                            </button>
+                            <button class="btn" [class.btn-warning]="filtroAtual === 'confirmadas'"
+                                [class.btn-outline-warning]="filtroAtual !== 'confirmadas'"
+                                (click)="filtrarReservas('confirmadas')">
+                                Confirmadas
+                            </button>
+                            <button class="btn" [class.btn-warning]="filtroAtual === 'pendentes'"
+                                [class.btn-outline-warning]="filtroAtual !== 'pendentes'"
+                                (click)="filtrarReservas('pendentes')">
+                                Pendentes
+                            </button>
+                            <button class="btn" [class.btn-warning]="filtroAtual === 'concluidas'"
+                                [class.btn-outline-warning]="filtroAtual !== 'concluidas'"
+                                (click)="filtrarReservas('concluidas')">
+                                Concluídas
+                            </button>
+                            <button class="btn" [class.btn-warning]="filtroAtual === 'canceladas'"
+                                [class.btn-outline-warning]="filtroAtual !== 'canceladas'"
+                                (click)="filtrarReservas('canceladas')">
+                                Canceladas
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Buscar nas reservas..."
+                                [(ngModel)]="searchTerm" (keyup)="aplicarBusca()">
+                            <button class="btn btn-outline-secondary" type="button" (click)="aplicarBusca()">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center py-5" *ngIf="reservas.length === 0">
+                    <i class="bi bi-calendar-x display-1 text-muted"></i>
+                    <h3 class="mt-3">Você ainda não tem reservas</h3>
+                    <p class="text-muted">Explore os espaços disponíveis e faça sua primeira reserva</p>
+                    <button class="btn btn-warning mt-3" (click)="irParaReservar()">
+                        <i class="bi bi-search me-2"></i>
+                        Explorar espaços
+                    </button>
+                </div>
+
+                <div *ngIf="reservas.length > 0 && reservasFiltradas.length > 0">
+                    <div class="row row-cols-1 row-cols-md-2 g-4">
+                        <div class="col" *ngFor="let reserva of reservasFiltradas">
+                            <div class="card h-100 reservation-card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <span class="badge" [ngClass]="getStatusBadgeClass(reserva.status)">
+                                        {{ getStatusText(reserva.status) }}
+                                    </span>
+                                    <small class="text-muted">Reserva #{{ reserva.id_reserva }}</small>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex mb-3">
+                                        <img [src]="getLocalImagem(reserva.id_local)" class="reservation-image me-3"
+                                            [alt]="getLocalNome(reserva.id_local)">
+                                        <div>
+                                            <h5 class="card-title mb-1">{{ getLocalNome(reserva.id_local) }}</h5>
+                                            <p class="card-text text-muted mb-1">
+                                                <i class="bi bi-geo-alt me-1"></i>
+                                                {{ getLocalEndereco(reserva.id_local) }}
+                                            </p>
+                                            <p class="card-text mb-0">
+                                                <i class="bi bi-tag me-1"></i>
+                                                {{ getLocalTipo(reserva.id_local) }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="reservation-details">
+                                        <div class="detail-item">
+                                            <i class="bi bi-calendar-event"></i>
+                                            <span>{{ getReservaDetalhes(reserva) }}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="bi bi-people"></i>
+                                            <span>{{ reserva.quantidade_pessoas }} {{ reserva.quantidade_pessoas === 1 ?
+                                                'pessoa' : 'pessoas' }}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="bi bi-credit-card"></i>
+                                            <span>{{ formatarPreco(reserva.valor_total) }}</span>
+                                        </div>
+                                        <div class="detail-item" *ngIf="reserva.observacoes">
+                                            <i class="bi bi-chat-left-text"></i>
+                                            <span>{{ reserva.observacoes }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="d-flex justify-content-between">
+                                        <button class="btn btn-sm btn-outline-warning"
+                                            (click)="irParaLocal(reserva.id_local)">
+                                            <i class="bi bi-eye me-1"></i>
+                                            Ver local
+                                        </button>
+                                        <div>
+                                            <button class="btn btn-sm btn-outline-success me-2"
+                                                (click)="irParaChat(reserva)" *ngIf="reserva.status !== 'cancelada'">
+                                                <i class="bi bi-chat-dots me-1"></i>
+                                                Chat
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger"
+                                                (click)="cancelarReserva(reserva)"
+                                                *ngIf="reserva.status === 'confirmada' || reserva.status === 'pendente'">
+                                                <i class="bi bi-x-circle me-1"></i>
+                                                Cancelar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center py-5" *ngIf="reservas.length > 0 && reservasFiltradas.length === 0">
+                    <i class="bi bi-search display-1 text-muted"></i>
+                    <h3 class="mt-3">Nenhum resultado encontrado</h3>
+                    <p class="text-muted">Tente buscar por outros termos ou alterar os filtros</p>
+                    <button class="btn btn-outline-secondary mt-3" (click)="searchTerm = ''; filtrarReservas('todas')">
+                        Limpar busca
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

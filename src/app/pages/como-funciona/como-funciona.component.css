@@ -1,0 +1,176 @@
+.nav-pills .nav-link {
+    color: #6c757d;
+    border-radius: 10px;
+    padding: 12px 20px;
+    transition: all 0.3s ease;
+}
+
+.nav-pills .nav-link.active {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.nav-pills .nav-link:hover:not(.active) {
+    background-color: #f8f9fa;
+}
+
+
+.timeline {
+    position: relative;
+    padding: 20px 0;
+}
+
+.step-content {
+    position: relative;
+    padding: 20px;
+}
+
+.step-number {
+    position: absolute;
+    top: -15px;
+    left: 0;
+    width: 30px;
+    height: 30px;
+    background-color: #ffc107;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    z-index: 2;
+}
+
+.step-content.text-md-end .step-number {
+    left: auto;
+    right: 0;
+}
+
+.step-icon {
+    font-size: 2.5rem;
+    color: #6f42c1;
+    margin-bottom: 1rem;
+}
+
+.step-content h3 {
+    color: #6f42c1;
+    margin-bottom: 1rem;
+}
+
+.step-image img {
+    width: 100%;
+    height: auto;
+    border: 3px solid #ffc107;
+}
+
+
+.benefit-card {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    height: 100%;
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+}
+
+.benefit-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-color: #ffc107;
+}
+
+.benefit-icon {
+    width: 70px;
+    height: 70px;
+    background-color: #f8f9fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    border: 2px solid #ffc107;
+}
+
+.benefit-icon i {
+    font-size: 2rem;
+    color: #6f42c1;
+}
+
+.benefit-card h3 {
+    color: #6f42c1;
+    margin-bottom: 1rem;
+}
+
+
+.accordion-item {
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.accordion-button {
+    background-color: #fff;
+    color: #212529;
+    font-weight: 600;
+    padding: 15px 20px;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: #fff9e6;
+    color: #6f42c1;
+    box-shadow: none;
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+    border-color: #ffc107;
+}
+
+.accordion-button::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%236f42c1'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+
+.cta-card {
+    background: linear-gradient(135deg, #6f42c1, #8540c1);
+    color: white;
+    padding: 3rem;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(111, 66, 193, 0.2);
+    border: 2px solid #ffc107;
+    margin-top: 3rem;
+}
+
+.cta-card h2 {
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 767.98px) {
+
+    .step-content,
+    .step-content.text-md-end {
+        text-align: center;
+    }
+
+    .step-number {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .step-content.text-md-end .step-number {
+        left: 50%;
+        right: auto;
+    }
+
+    .step-image {
+        margin-bottom: 2rem;
+    }
+
+    .cta-card {
+        padding: 2rem;
+    }
+}

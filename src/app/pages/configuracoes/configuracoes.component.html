@@ -56,7 +56,6 @@
                             </a>
                         </li>
                     </ul>
-
                     <div *ngIf="activeTab === 'perfil'">
                         <h4 class="mb-4">Informações Pessoais</h4>
 
@@ -66,11 +65,9 @@
                                     <label for="nome_empresa" class="form-label">Nome da Empresa</label>
                                     <input type="text" class="form-control" id="nome_empresa"
                                         formControlName="nome_empresa"
-                                        [ngClass]="{'is-invalid': perfilForm.get('nome_empresa')?.invalid && perfilForm.get('nome_empresa')?.touched}">
-                                    <div class="invalid-feedback"
-                                        *ngIf="perfilForm.get('nome_empresa')?.errors?.['required']">
-                                        Nome da empresa é obrigatório
-                                    </div>
+                                        [ngClass]="{'is-invalid': perfilForm.get('nome_empresa')?.invalid && perfilForm.get('nome_empresa')?.touched}"
+                                        readonly title="Este campo não pode ser alterado">
+                                    <small class="text-muted">Este campo não pode ser alterado</small>
                                 </div>
 
                                 <div class="mb-3">
@@ -91,10 +88,9 @@
                                 <div class="mb-3">
                                     <label for="cnpj" class="form-label">CNPJ</label>
                                     <input type="text" class="form-control" id="cnpj" formControlName="cnpj"
-                                        [ngClass]="{'is-invalid': perfilForm.get('cnpj')?.invalid && perfilForm.get('cnpj')?.touched}">
-                                    <div class="invalid-feedback" *ngIf="perfilForm.get('cnpj')?.errors?.['required']">
-                                        CNPJ é obrigatório
-                                    </div>
+                                        [ngClass]="{'is-invalid': perfilForm.get('cnpj')?.invalid && perfilForm.get('cnpj')?.touched}"
+                                        readonly title="Este campo não pode ser alterado">
+                                    <small class="text-muted">Este campo não pode ser alterado</small>
                                 </div>
 
                                 <div class="row mb-3">
@@ -135,11 +131,9 @@
                                     <label for="nome_usuario" class="form-label">Nome Completo</label>
                                     <input type="text" class="form-control" id="nome_usuario"
                                         formControlName="nome_usuario"
-                                        [ngClass]="{'is-invalid': perfilForm.get('nome_usuario')?.invalid && perfilForm.get('nome_usuario')?.touched}">
-                                    <div class="invalid-feedback"
-                                        *ngIf="perfilForm.get('nome_usuario')?.errors?.['required']">
-                                        Nome é obrigatório
-                                    </div>
+                                        [ngClass]="{'is-invalid': perfilForm.get('nome_usuario')?.invalid && perfilForm.get('nome_usuario')?.touched}"
+                                        readonly title="Este campo não pode ser alterado">
+                                    <small class="text-muted">Este campo não pode ser alterado</small>
                                 </div>
 
                                 <div class="mb-3">
@@ -160,21 +154,18 @@
                                 <div class="mb-3">
                                     <label for="cpf" class="form-label">CPF</label>
                                     <input type="text" class="form-control" id="cpf" formControlName="cpf"
-                                        [ngClass]="{'is-invalid': perfilForm.get('cpf')?.invalid && perfilForm.get('cpf')?.touched}">
-                                    <div class="invalid-feedback" *ngIf="perfilForm.get('cpf')?.errors?.['required']">
-                                        CPF é obrigatório
-                                    </div>
+                                        [ngClass]="{'is-invalid': perfilForm.get('cpf')?.invalid && perfilForm.get('cpf')?.touched}"
+                                        readonly title="Este campo não pode ser alterado">
+                                    <small class="text-muted">Este campo não pode ser alterado</small>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="data_nascimento" class="form-label">Data de Nascimento</label>
                                     <input type="date" class="form-control" id="data_nascimento"
                                         formControlName="data_nascimento"
-                                        [ngClass]="{'is-invalid': perfilForm.get('data_nascimento')?.invalid && perfilForm.get('data_nascimento')?.touched}">
-                                    <div class="invalid-feedback"
-                                        *ngIf="perfilForm.get('data_nascimento')?.errors?.['required']">
-                                        Data de nascimento é obrigatória
-                                    </div>
+                                        [ngClass]="{'is-invalid': perfilForm.get('data_nascimento')?.invalid && perfilForm.get('data_nascimento')?.touched}"
+                                        readonly title="Este campo não pode ser alterado">
+                                    <small class="text-muted">Este campo não pode ser alterado</small>
                                 </div>
 
                                 <div class="row mb-3">

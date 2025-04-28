@@ -21,6 +21,7 @@ export class MenuSuperiorComponent implements OnInit {
   userName = ""
   userEmail = ""
   notificacoesNaoLidas = 0
+  userProfilePic = ""
 
   constructor(
     private authService: AuthService,
@@ -44,13 +45,14 @@ export class MenuSuperiorComponent implements OnInit {
       if (this.isLoggedIn && this.currentUser) {
         this.atualizarContadorNotificacoes();
       }
-    }, 30000);
+    }, 3000);
   }
 
   updateUserInfo(): void {
     if (!this.currentUser) {
       this.userName = ""
       this.userEmail = ""
+      this.userProfilePic = ""
       return
     }
 
@@ -60,10 +62,12 @@ export class MenuSuperiorComponent implements OnInit {
       const usuario = this.currentUser as Usuario
       this.userName = usuario.nome_usuario
       this.userEmail = usuario.email_usuario
+      this.userProfilePic = usuario.foto_perfil || ""
     } else if (this.userType === "empresa") {
       const empresa = this.currentUser as Empresa
       this.userName = empresa.nome_empresa
       this.userEmail = empresa.email_empresa
+      this.userProfilePic = empresa.foto_perfil || ""
     }
   }
 

@@ -5,11 +5,16 @@ import type { Empresa } from "../models/Empresa"
 import { Comentario } from "../models/Comentario"
 import { Favorito } from "../models/Favoritos"
 import { Notificacao } from "../models/Notificacao"
+import { BehaviorSubject } from "rxjs"
+import { Reserva } from "../models/Reserva"
 
 @Injectable({
     providedIn: "root",
 })
 export class MockDataService {
+    private notificacoesChangedSubject = new BehaviorSubject<boolean>(false)
+    public notificacoesChanged$ = this.notificacoesChangedSubject.asObservable()
+
     private _usuarios: Usuario[] = [
         {
             id_usuario: 1,
@@ -23,6 +28,7 @@ export class MockDataService {
             cep: "18000-000",
             cidade_usuario: "Sorocaba",
             estado_usuario: "SP",
+            foto_perfil: ""
         },
         {
             id_usuario: 2,
@@ -36,6 +42,7 @@ export class MockDataService {
             cep: "18000-000",
             cidade_usuario: "Sorocaba",
             estado_usuario: "SP",
+            foto_perfil: ""
         },
     ]
 
@@ -51,6 +58,7 @@ export class MockDataService {
             cep: "18000-000",
             cidade_empresa: "Sorocaba",
             estado_empresa: "SP",
+            foto_perfil: ""
         },
         {
             id_empresa: 2,
@@ -63,6 +71,7 @@ export class MockDataService {
             cep: "18000-000",
             cidade_empresa: "Sorocaba",
             estado_empresa: "SP",
+            foto_perfil: ""
         },
     ]
 
@@ -474,7 +483,7 @@ export class MockDataService {
             numero_local: "s/n",
             celular_local: "(15) 97777-9999",
             descricao_local: "Espaço comunitário para eventos sociais e reuniões de bairro.\n• Salão para 100 pessoas;\n• Cozinha comunitária;\n• Área externa com mesas;\n• Acessibilidade;\n• Estacionamento gratuito.",
-            valor: 0.0,
+            valor: 400.0,
             tipo_local: "publicos ou comunitarios",
             tipo_locacao: "dia",
             data_disponibilidade: new Date(),
@@ -768,7 +777,80 @@ export class MockDataService {
         longitude: -47.4726,
     }
 
-    constructor() { }
+    constructor() {
+        this.loadFromLocalStorage()
+    }
+
+    private saveToLocalStorage(): void {
+        localStorage.setItem("usuarios", JSON.stringify(this._usuarios))
+        localStorage.setItem("empresas", JSON.stringify(this._empresas))
+        localStorage.setItem("locais", JSON.stringify(this._locais))
+        localStorage.setItem("favoritos", JSON.stringify(this._favoritos))
+        localStorage.setItem("notificacoes", JSON.stringify(this._notificacoes))
+        localStorage.setItem("comentarios", JSON.stringify(this._comentarios))
+    }
+
+    private loadFromLocalStorage(): void {
+        const storedUsuarios = localStorage.getItem("usuarios")
+        if (storedUsuarios) {
+            const parsedUsuarios = JSON.parse(storedUsuarios)
+            parsedUsuarios.forEach((usuario: any) => {
+                if (usuario.data_nascimento) {
+                    usuario.data_nascimento = new Date(usuario.data_nascimento)
+                }
+            })
+            this._usuarios = parsedUsuarios
+        }
+
+        const storedEmpresas = localStorage.getItem("empresas")
+        if (storedEmpresas) {
+            this._empresas = JSON.parse(storedEmpresas)
+        }
+
+        const storedLocais = localStorage.getItem("locais")
+        if (storedLocais) {
+            const parsedLocais = JSON.parse(storedLocais)
+            parsedLocais.forEach((local: any) => {
+                if (local.data_disponibilidade) {
+                    local.data_disponibilidade = new Date(local.data_disponibilidade)
+                }
+            })
+            this._locais = parsedLocais
+        }
+
+        const storedFavoritos = localStorage.getItem("favoritos")
+        if (storedFavoritos) {
+            const parsedFavoritos = JSON.parse(storedFavoritos)
+            parsedFavoritos.forEach((favorito: any) => {
+                if (favorito.data_favorito) {
+                    favorito.data_favorito = new Date(favorito.data_favorito)
+                }
+            })
+            this._favoritos = parsedFavoritos
+        }
+
+        const storedNotificacoes = localStorage.getItem("notificacoes")
+        if (storedNotificacoes) {
+            const parsedNotificacoes = JSON.parse(storedNotificacoes)
+            parsedNotificacoes.forEach((notificacao: any) => {
+                if (notificacao.data_notificacao) {
+                    notificacao.data_notificacao = new Date(notificacao.data_notificacao)
+                }
+            })
+            this._notificacoes = parsedNotificacoes
+        }
+
+        const storedComentarios = localStorage.getItem("comentarios")
+        if (storedComentarios) {
+            const parsedComentarios = JSON.parse(storedComentarios)
+            parsedComentarios.forEach((comentario: any) => {
+                if (comentario.data_comentario) {
+                    comentario.data_comentario = new Date(comentario.data_comentario)
+                }
+            })
+            this._comentarios = parsedComentarios
+        }
+    }
 
     getUsuarios(): Usuario[] {
         return [...this._usuarios]
@@ -806,18 +888,21 @@ export class MockDataService {
         const newId = this._usuarios.length > 0 ? Math.max(...this._usuarios.map((u) => u.id_usuario)) + 1 : 1
         usuario.id_usuario = newId
         this._usuarios.push(usuario)
+        this.saveToLocalStorage()
     }
 
     addEmpresa(empresa: Empresa): void {
         const newId = this._empresas.length > 0 ? Math.max(...this._empresas.map((e) => e.id_empresa)) + 1 : 1
         empresa.id_empresa = newId
         this._empresas.push(empresa)
+        this.saveToLocalStorage()
     }
 
     addLocal(local: Local): void {
         const newId = this._locais.length > 0 ? Math.max(...this._locais.map((l) => l.id_local)) + 1 : 1
         local.id_local = newId
         this._locais.push(local)
+        this.saveToLocalStorage()
     }
 
     emailExists(email: string): boolean {
@@ -863,8 +948,10 @@ export class MockDataService {
         const newId = this._comentarios.length > 0 ? Math.max(...this._comentarios.map((c) => c.id_comentario)) + 1 : 1
         comentario.id_comentario = newId
         this._comentarios.push(comentario)
+        this.saveToLocalStorage()
 
         this.updateLocalRating(comentario.id_local)
+
     }
 
     private updateLocalRating(localId: number): void {
@@ -877,6 +964,7 @@ export class MockDataService {
         const local = this._locais.find((l) => l.id_local === localId)
         if (local) {
             local.avaliacao = Number.parseFloat(mediaAvaliacoes.toFixed(1))
+            this.saveToLocalStorage()
         }
     }
 
@@ -941,6 +1029,7 @@ export class MockDataService {
         const newId = this._favoritos.length > 0 ? Math.max(...this._favoritos.map((f) => f.id_favorito)) + 1 : 1
         newFavorito.id_favorito = newId
         this._favoritos.push(newFavorito)
+        this.saveToLocalStorage()
 
         this.addNotificacao({
             id_notificacao: 0,
@@ -963,6 +1052,7 @@ export class MockDataService {
 
         if (index !== -1) {
             this._favoritos.splice(index, 1)
+            this.saveToLocalStorage()
         }
     }
 
@@ -1061,6 +1151,8 @@ export class MockDataService {
         const newId = this._notificacoes.length > 0 ? Math.max(...this._notificacoes.map((n) => n.id_notificacao)) + 1 : 1
         notificacao.id_notificacao = newId
         this._notificacoes.push(notificacao)
+        this.saveToLocalStorage()
+        this.notificacoesChangedSubject.next(true)
         return notificacao
     }
 
@@ -1068,22 +1160,33 @@ export class MockDataService {
         const notificacao = this._notificacoes.find((n) => n.id_notificacao === id)
         if (notificacao) {
             notificacao.lida = true
+            this.saveToLocalStorage()
+
+            this.notificacoesChangedSubject.next(true)
         }
     }
 
     marcarTodasNotificacoesComoLidas(usuarioId?: number, empresaId?: number): void {
+        let mudanca = false
+
         if (usuarioId) {
             this._notificacoes
-                .filter((n) => n.id_usuario === usuarioId)
+                .filter((n) => n.id_usuario === usuarioId && !n.lida)
                 .forEach((n) => {
                     n.lida = true
+                    mudanca = true
                 })
         } else if (empresaId) {
             this._notificacoes
-                .filter((n) => n.id_empresa === empresaId)
+                .filter((n) => n.id_empresa === empresaId && !n.lida)
                 .forEach((n) => {
                     n.lida = true
+                    mudanca = true
                 })
+        }
+        if (mudanca) {
+            this.saveToLocalStorage()
+            this.notificacoesChangedSubject.next(true)
         }
     }
 
@@ -1091,14 +1194,21 @@ export class MockDataService {
         const index = this._notificacoes.findIndex((n) => n.id_notificacao === id)
         if (index !== -1) {
             this._notificacoes.splice(index, 1)
+            this.saveToLocalStorage()
+            this.notificacoesChangedSubject.next(true)
         }
     }
 
     excluirTodasNotificacoes(usuarioId?: number, empresaId?: number): void {
+        const tamanhoAnterior = this._notificacoes.length
         if (usuarioId) {
             this._notificacoes = this._notificacoes.filter((n) => n.id_usuario !== usuarioId)
         } else if (empresaId) {
             this._notificacoes = this._notificacoes.filter((n) => n.id_empresa !== empresaId)
+        }
+        if (tamanhoAnterior !== this._notificacoes.length) {
+            this.saveToLocalStorage()
+            this.notificacoesChangedSubject.next(true)
         }
     }
 
@@ -1106,6 +1216,7 @@ export class MockDataService {
         const index = this._locais.findIndex(local => local.id_local === id)
         if (index !== -1) {
             this._locais.splice(index, 1)
+            this.saveToLocalStorage()
         }
 
         this._comentarios = this._comentarios.filter(c => c.id_local !== id)
@@ -1121,6 +1232,7 @@ export class MockDataService {
         const index = this._usuarios.findIndex((u) => u.id_usuario === usuario.id_usuario)
         if (index !== -1) {
             this._usuarios[index] = usuario
+            this.saveToLocalStorage()
         }
     }
 
@@ -1128,6 +1240,82 @@ export class MockDataService {
         const index = this._empresas.findIndex((e) => e.id_empresa === empresa.id_empresa)
         if (index !== -1) {
             this._empresas[index] = empresa
+            this.saveToLocalStorage()
+        }
+    }
+
+    updateLocal(local: Local): void {
+        const index = this._locais.findIndex((l) => l.id_local === local.id_local)
+        if (index !== -1) {
+            this._locais[index] = local
+            this.saveToLocalStorage()
+        }
+    }
+
+    addReserva(reserva: Reserva): Reserva {
+        let reservas: Reserva[] = []
+        const storedReservas = localStorage.getItem("reservas")
+        if (storedReservas) {
+            reservas = JSON.parse(storedReservas)
+        }
+
+        const newId = reservas.length > 0 ? Math.max(...reservas.map((r) => r.id_reserva)) + 1 : 1
+        reserva.id_reserva = newId
+
+        reservas.push(reserva)
+
+
+        localStorage.setItem("reservas", JSON.stringify(reservas))
+
+        return reserva
+    }
+
+    getReservasByUsuario(usuarioId: number): Reserva[] {
+        const storedReservas = localStorage.getItem("reservas")
+        if (!storedReservas) return []
+
+        const reservas: Reserva[] = JSON.parse(storedReservas)
+        return reservas.filter((r) => r.id_usuario === usuarioId)
+    }
+
+    getReservasByLocal(localId: number): Reserva[] {
+        const storedReservas = localStorage.getItem("reservas")
+        if (!storedReservas) return []
+
+        const reservas: Reserva[] = JSON.parse(storedReservas)
+        return reservas.filter((r) => r.id_local === localId)
+    }
+
+    getReservaById(id: number): Reserva | undefined {
+        const storedReservas = localStorage.getItem("reservas");
+        if (!storedReservas) return undefined;
+
+        const reservas: Reserva[] = JSON.parse(storedReservas);
+
+        reservas.forEach(reserva => {
+            if (typeof reserva.data_inicio === 'string') {
+                reserva.data_inicio = new Date(reserva.data_inicio);
+            }
+            if (typeof reserva.data_fim === 'string') {
+                reserva.data_fim = new Date(reserva.data_fim);
+            }
+            if (typeof reserva.data_reserva === 'string') {
+                reserva.data_reserva = new Date(reserva.data_reserva);
+            }
+        });
+
+        return reservas.find(r => r.id_reserva === id);
+    }
+
+    updateReserva(reserva: Reserva): void {
+        const storedReservas = localStorage.getItem("reservas");
+        if (!storedReservas) return;
+
+        const reservas: Reserva[] = JSON.parse(storedReservas);
+        const index = reservas.findIndex(r => r.id_reserva === reserva.id_reserva);
+        if (index !== -1) {
+            reservas[index] = reserva;
+            localStorage.setItem("reservas", JSON.stringify(reservas));
         }
     }
 

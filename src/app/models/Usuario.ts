@@ -10,4 +10,5 @@ export interface Usuario {
     cpf: string
     telefone_usuario: string
     senha_usuario: string
+    foto_perfil?: string
 }

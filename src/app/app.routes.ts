@@ -12,6 +12,12 @@ import { CriarAnuncioComponent } from './pages/criar-anuncio/criar-anuncio.compo
 import { MeusAnunciosComponent } from './pages/meus-anuncios/meus-anuncios.component';
 import { PerfilComponent } from './pages/perfil/perfil.component';
 import { ConfiguracoesComponent } from './pages/configuracoes/configuracoes.component';
+import { LandingPageComponent } from './pages/landing-page/landing-page.component';
+import { EditarAnuncioComponent } from './pages/editar-anuncio/editar-anuncio.component';
+import { ComoFuncionaComponent } from './pages/como-funciona/como-funciona.component';
+import { ReservarLocalComponent } from './pages/reservar-local/reservar-local.component';
+import { MinhasReservasComponent } from './pages/minhas-reservas/minhas-reservas.component';
+import { ChatComponent } from './pages/chat/chat.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -28,5 +34,11 @@ export const routes: Routes = [
     { path: 'meus-anuncios', component: MeusAnunciosComponent },
     { path: 'perfil', component: PerfilComponent },
     { path: 'configuracoes', component: ConfiguracoesComponent },
+    { path: 'landing-page', component: LandingPageComponent },
+    { path: 'editar-anuncio/:id', component: EditarAnuncioComponent },
+    { path: 'como-funciona', component: ComoFuncionaComponent },
+    { path: 'reservar/:id', component: ReservarLocalComponent },
+    { path: 'minhas-reservas', component: MinhasReservasComponent },
+    { path: 'chat', component: ChatComponent },
     { path: '**', component: PaginaNaoEncontradaComponent }
 ];

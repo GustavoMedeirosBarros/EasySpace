@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Local } from '../../models/Local';
 import { Usuario } from '../../models/Usuario';
 import { Empresa } from '../../models/Empresa';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MockDataService } from '../../services/mock.dados.service';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -10,7 +10,7 @@ import { Comentario } from '../../models/Comentario';
 
 @Component({
   selector: 'app-local-details',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './local-details.component.html',
   styleUrl: './local-details.component.css'
 })

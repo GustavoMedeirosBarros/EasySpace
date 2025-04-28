@@ -1,0 +1,196 @@
+.summary-card {
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.summary-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.summary-item {
+    font-size: 0.95rem;
+}
+
+.info-card {
+    border-radius: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+}
+
+.info-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.info-list li {
+    padding: 8px 0;
+    border-bottom: 1px dashed #e9ecef;
+}
+
+.info-list li:last-child {
+    border-bottom: none;
+}
+
+.progress-steps {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.step-label {
+    font-size: 0.85rem;
+    color: #6c757d;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.step-line {
+    flex: 1;
+    height: 3px;
+    background-color: #e9ecef;
+    margin: 0 15px;
+    position: relative;
+    top: -20px;
+    z-index: 0;
+    transition: all 0.3s ease;
+}
+
+.step.active .step-number {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.step.active .step-label {
+    color: #212529;
+    font-weight: 500;
+}
+
+.step.completed .step-number {
+    background-color: #8e44ad;
+    color: white;
+}
+
+.step-line.active {
+    background-color: #ffc107;
+}
+
+/* Estilos para o card de confirmação */
+.confirmation-card {
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-top: 5px solid #8e44ad;
+}
+
+.confirmation-icon {
+    font-size: 4rem;
+    color: #8e44ad;
+    margin-bottom: 20px;
+}
+
+.confirmation-details {
+    max-width: 500px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+::ng-deep .mat-calendar-body-selected {
+    background-color: #8e44ad !important;
+    color: white !important;
+}
+
+::ng-deep .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+    border-color: #ffc107 !important;
+}
+
+::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
+    background-color: #f8f9fa;
+}
+
+::ng-deep .mat-form-field-underline {
+    background-color: #ced4da !important;
+}
+
+::ng-deep .mat-form-field.mat-focused .mat-form-field-ripple {
+    background-color: #8e44ad !important;
+}
+
+::ng-deep .mat-form-field.mat-focused .mat-form-field-label {
+    color: #8e44ad !important;
+}
+
+::ng-deep .mat-datepicker-toggle-active {
+    color: #8e44ad !important;
+}
+
+.calendar-legend {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+}
+
+.available-date i {
+    color: #28a745;
+    font-size: 0.7rem;
+}
+
+.unavailable-date i {
+    color: #dc3545;
+    font-size: 0.7rem;
+}
+
+/* Estilos para datas indisponíveis no calendário */
+::ng-deep .mat-calendar-body-disabled>.mat-calendar-body-cell-content {
+    text-decoration: line-through;
+    color: #dc3545 !important;
+}
+
+/* Estilos responsivos */
+@media (max-width: 767px) {
+    .progress-steps {
+        margin-bottom: 20px;
+    }
+
+    .step-number {
+        width: 30px;
+        height: 30px;
+        font-size: 0.85rem;
+    }
+
+    .step-label {
+        font-size: 0.75rem;
+    }
+
+    .step-line {
+        top: -15px;
+    }
+
+    .confirmation-icon {
+        font-size: 3rem;
+    }
+}

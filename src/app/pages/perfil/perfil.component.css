@@ -1,8 +1,13 @@
 .profile-card {
-    border-radius: 10px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
 }
 
 .profile-avatar-container {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 1rem;
     display: flex;
     justify-content: center;
 }
@@ -11,13 +16,29 @@
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    background-color: #ffc107;
+    background-color: #f8f9fa;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #212529;
-    font-weight: bold;
-    font-size: 3rem;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.profile-avatar i {
+    font-size: 60px;
+    color: #0d6efd;
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-avatar-upload {
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 .profile-initial {
@@ -28,15 +49,33 @@
     margin-top: 1rem;
 }
 
-.info-item {
-    margin-bottom: 0.75rem;
+.contact-info {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
 }
 
 .info-item i {
-    width: 20px;
+    font-size: 20px;
+    color: #ffc107;
+    margin-top: 3px;
+}
+
+.info-label {
+    font-size: 12px;
     color: #6c757d;
+    margin-bottom: 0;
+}
+
+.info-value {
+    font-size: 14px;
+    margin-bottom: 0;
 }
 
 .stats-item {
@@ -45,6 +84,38 @@
 
 .stats-item i {
     color: #6c757d;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon i {
+    font-size: 24px;
+    color: white;
+}
+
+.stat-info h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+.stat-info p {
+    font-size: 12px;
+    color: #6c757d;
+    margin-bottom: 0;
 }
 
 .listing-card {
@@ -123,10 +194,48 @@
     font-weight: 600;
 }
 
+.action-card {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    height: 100%;
+}
+
+.action-card:hover {
+    background-color: #e9ecef;
+    transform: translateY(-5px);
+}
+
+.action-icon {
+    font-size: 30px;
+    color: #0d6efd;
+    margin-bottom: 10px;
+}
+
+.action-card h5 {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.action-card p {
+    font-size: 12px;
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
 @media (max-width: 767.98px) {
     .profile-avatar {
         width: 100px;
         height: 100px;
         font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .stat-card {
+        margin-bottom: 15px;
     }
 }

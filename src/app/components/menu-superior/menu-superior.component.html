@@ -4,6 +4,7 @@
             <a class="navbar-brand" routerLink="/">
                 <img src="Logo.png" alt="Easy Space" height="50">
             </a>
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item mx-2">
@@ -27,6 +28,13 @@
                             <span>Favoritos</span>
                         </a>
                     </li>
+                    <!-- <li class="nav-item mx-2">
+                        <a class="nav-link d-flex flex-column align-items-center hover-yellow" routerLink="/sobre"
+                            routerLinkActive="active">
+                            <i class="bi bi-info-circle fs-5"></i>
+                            <span>Sobre</span>
+                        </a>
+                    </li> -->
                 </ul>
 
                 <div class="d-flex align-items-center">
@@ -46,14 +54,16 @@
                             Fazer anúncio
                         </a>
 
-                        <div class="dropdown" *ngIf="currentUser">
+                        <div class="dropdown">
                             <div class="d-flex align-items-center user-menu-trigger" id="userMenu"
                                 data-bs-toggle="dropdown" aria-expanded="false">
                                 <div class="user-info me-2 d-none d-md-block">
                                     <span class="fw-bold">{{ userName }}</span>
                                 </div>
                                 <div class="user-avatar">
-                                    <span class="user-initial">{{ userName.charAt(0) }}</span>
+                                    <img *ngIf="userProfilePic" [src]="userProfilePic" alt="Foto de perfil"
+                                        class="user-profile-pic">
+                                    <span *ngIf="!userProfilePic" class="user-initial">{{ userName.charAt(0) }}</span>
                                 </div>
                             </div>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userMenu">
@@ -76,6 +86,9 @@
                                         <i class="bi bi-bell me-2"></i>Notificações
                                         <span class="badge bg-danger ms-1" *ngIf="notificacoesNaoLidas > 0">{{
                                             notificacoesNaoLidas }}</span>
+                                    </a></li>
+                                <li><a class="dropdown-item hover-yellow" routerLink="/minhas-reservas">
+                                        <i class="bi bi-calendar-check me-2"></i>Ver Minhas Reservas
                                     </a></li>
                                 <li><a class="dropdown-item hover-yellow" routerLink="/chat">
                                         <i class="bi bi-chat-dots me-2"></i>Chat
@@ -100,7 +113,7 @@
                         <a class="btn btn-outline-warning me-2 hover-dark" routerLink="/login">
                             <i class="bi bi-box-arrow-in-right me-1"></i>Entrar
                         </a>
-                        <a class="btn btn-warning hover-dark" routerLink="/registro">
+                        <a class="btn btn-warning hover-dark" routerLink="/register">
                             <i class="bi bi-person-plus me-1"></i>Cadastrar
                         </a>
                     </ng-template>
@@ -182,7 +195,8 @@
     <div class="offcanvas-header">
         <div class="d-flex align-items-center">
             <div class="user-avatar me-2">
-                <span class="user-initial">{{ userName.charAt(0) }}</span>
+                <img *ngIf="userProfilePic" [src]="userProfilePic" alt="Foto de perfil" class="user-profile-pic">
+                <span *ngIf="!userProfilePic" class="user-initial">{{ userName.charAt(0) }}</span>
             </div>
             <div>
                 <h5 class="offcanvas-title mb-0">{{ userName }}</h5>
@@ -202,6 +216,9 @@
             <a routerLink="/notificacoes" class="list-group-item list-group-item-action">
                 <i class="bi bi-bell me-2"></i>Notificações
                 <span class="badge bg-danger ms-1" *ngIf="notificacoesNaoLidas > 0">{{ notificacoesNaoLidas }}</span>
+            </a>
+            <a routerLink="/chat" class="list-group-item list-group-item-action">
+                <i class="bi bi-calendar-check me-2"></i>Ver Minhas Reservas
             </a>
             <a routerLink="/chat" class="list-group-item list-group-item-action">
                 <i class="bi bi-chat-dots me-2"></i>Chat

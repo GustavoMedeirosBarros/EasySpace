@@ -15,8 +15,8 @@
                 <h2>{{ local.nome_local }}</h2>
                 <div class="price-tag text-end">
                     <h3 class="mb-0">R${{ local.valor }}<span class="price-unit">{{ getLocacaoText() }}</span></h3>
-                    <button class="btn btn-warning mt-2 w-100" (click)="startChat()">
-                        <i class="bi bi-chat-dots me-2"></i>Chat
+                    <button class="btn btn-warning w-100 mb-2" [routerLink]="['/reservar', local.id_local]">
+                        <i class="bi bi-calendar-check me-2"></i>Reservar agora
                     </button>
                 </div>
             </div>

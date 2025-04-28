@@ -1,0 +1,180 @@
+<div class="container py-5">
+  <div class="row mb-5">
+    <div class="col-12 text-center">
+      <h1 class="display-4 fw-bold mb-3">Como funciona o Easy Space</h1>
+      <p class="lead text-muted">Entenda como nossa plataforma conecta pessoas que buscam espaços com proprietários que
+        desejam alugar</p>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-12">
+      <ul class="nav nav-pills nav-fill mb-4" id="howItWorksTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="renter-tab" data-bs-toggle="tab" data-bs-target="#renter-content"
+            type="button" role="tab" aria-controls="renter-content" aria-selected="true">
+            <i class="bi bi-search me-2"></i>Para quem busca espaços
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="owner-tab" data-bs-toggle="tab" data-bs-target="#owner-content" type="button"
+            role="tab" aria-controls="owner-content" aria-selected="false">
+            <i class="bi bi-house me-2"></i>Para quem anuncia espaços
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="howItWorksTabContent">
+        <div class="tab-pane fade show active" id="renter-content" role="tabpanel" aria-labelledby="renter-tab">
+          <div class="row">
+            <div class="col-12 mb-4">
+              <div class="card border-0 bg-light">
+                <div class="card-body p-4">
+                  <h2 class="card-title text-center mb-4">Encontre o espaço perfeito em 4 passos simples</h2>
+
+                  <div class="timeline">
+                    <div class="row g-4" *ngFor="let step of stepsForRenters; let i = index">
+                      <div class="col-md-6" [ngClass]="{'order-md-2': i % 2 !== 0}">
+                        <div class="step-image">
+                          <img [src]="step.image" [alt]="step.title" class="img-fluid rounded shadow">
+                        </div>
+                      </div>
+                      <div class="col-md-6" [ngClass]="{'order-md-1': i % 2 !== 0}">
+                        <div class="step-content" [ngClass]="{'text-md-end': i % 2 !== 0}">
+                          <div class="step-number">{{ i + 1 }}</div>
+                          <div class="step-icon">
+                            <i [class]="'bi ' + step.icon"></i>
+                          </div>
+                          <h3>{{ step.title }}</h3>
+                          <p>{{ step.description }}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center mt-4">
+            <a routerLink="/explorar" class="btn btn-warning btn-lg">
+              <i class="bi bi-search me-2"></i>Começar a buscar espaços
+            </a>
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="owner-content" role="tabpanel" aria-labelledby="owner-tab">
+          <div class="row">
+            <div class="col-12 mb-4">
+              <div class="card border-0 bg-light">
+                <div class="card-body p-4">
+                  <h2 class="card-title text-center mb-4">Anuncie seu espaço e comece a lucrar em 4 passos</h2>
+
+                  <div class="timeline">
+                    <div class="row g-4" *ngFor="let step of stepsForOwners; let i = index">
+                      <div class="col-md-6" [ngClass]="{'order-md-2': i % 2 !== 0}">
+                        <div class="step-image">
+                          <img [src]="step.image" [alt]="step.title" class="img-fluid rounded shadow">
+                        </div>
+                      </div>
+                      <div class="col-md-6" [ngClass]="{'order-md-1': i % 2 !== 0}">
+                        <div class="step-content" [ngClass]="{'text-md-end': i % 2 !== 0}">
+                          <div class="step-number">{{ i + 1 }}</div>
+                          <div class="step-icon">
+                            <i [class]="'bi ' + step.icon"></i>
+                          </div>
+                          <h3>{{ step.title }}</h3>
+                          <p>{{ step.description }}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center mt-4">
+            <a routerLink="/criar-anuncio" class="btn btn-warning btn-lg">
+              <i class="bi bi-plus-circle me-2"></i>Anunciar meu espaço
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-12 text-center mb-4">
+      <h2 class="fw-bold">Por que escolher o Easy Space?</h2>
+      <p class="text-muted">Descubra as vantagens de usar nossa plataforma</p>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="benefit-card">
+        <div class="benefit-icon">
+          <i class="bi bi-shield-check"></i>
+        </div>
+        <h3>Segurança</h3>
+        <p>Todos os espaços são verificados e os pagamentos são processados com segurança</p>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="benefit-card">
+        <div class="benefit-icon">
+          <i class="bi bi-cash-coin"></i>
+        </div>
+        <h3>Economia</h3>
+        <p>Preços competitivos e transparentes, sem taxas ocultas</p>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="benefit-card">
+        <div class="benefit-icon">
+          <i class="bi bi-stars"></i>
+        </div>
+        <h3>Variedade</h3>
+        <p>Milhares de opções para todos os tipos de necessidades</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-12 text-center mb-4">
+      <h2 class="fw-bold">Perguntas Frequentes</h2>
+      <p class="text-muted">Encontre respostas para as dúvidas mais comuns</p>
+    </div>
+
+    <div class="col-12">
+      <div class="accordion" id="faqAccordion">
+        <div class="accordion-item" *ngFor="let faq of faqs; let i = index">
+          <h2 class="accordion-header" [id]="'faqHeading' + i">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              [attr.data-bs-target]="'#faqCollapse' + i" aria-expanded="false" [attr.aria-controls]="'faqCollapse' + i">
+              {{ faq.question }}
+            </button>
+          </h2>
+          <div [id]="'faqCollapse' + i" class="accordion-collapse collapse" [attr.aria-labelledby]="'faqHeading' + i"
+            data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              {{ faq.answer }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12 col-md-8 offset-md-2 text-center">
+      <div class="cta-card">
+        <h2>Pronto para começar?</h2>
+        <p class="mb-4">Junte-se a milhares de pessoas que já estão usando o Easy Space</p>
+        <div class="d-flex justify-content-center gap-3">
+          <a routerLink="/explorar" class="btn btn-warning btn-lg">Encontrar espaços</a>
+          <a routerLink="/criar-anuncio" class="btn btn-outline-light btn-lg">Anunciar meu espaço</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

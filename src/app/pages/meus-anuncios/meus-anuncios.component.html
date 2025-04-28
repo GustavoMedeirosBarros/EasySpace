@@ -106,10 +106,10 @@
                         <thead class="table-light">
                             <tr>
                                 <th>Anúncio</th>
-                                <th>Categoria</th>
-                                <th>Preço</th>
+                                <th class="d-none d-sm-table-cell">Categoria</th>
+                                <th class="d-none d-md-table-cell">Preço</th>
                                 <th>Avaliação</th>
-                                <th>Status</th>
+                                <th class="d-none d-sm-table-cell">Status</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -126,34 +126,34 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td>{{ getCategoriaName(local.tipo_local) }}</td>
-                                <td>R$ {{ local.valor.toFixed(2) }}{{ getLocacaoText(local) }}</td>
+                                <td class="d-none d-sm-table-cell">{{ getCategoriaName(local.tipo_local) }}</td>
+                                <td class="d-none d-md-table-cell">R$ {{ local.valor.toFixed(2) }}{{
+                                    getLocacaoText(local) }}</td>
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <i class="bi bi-star-fill text-warning me-1"></i>
                                         <span>{{ local.avaliacao.toFixed(1) }}</span>
                                     </div>
                                 </td>
-                                <td>
+                                <td class="d-none d-sm-table-cell">
                                     <span class="badge bg-success">Ativo</span>
                                 </td>
                                 <td>
-                                    <div class="btn-group">
-                                        <a [routerLink]="['/local', local.id_local]"
-                                            class="btn btn-sm btn-outline-primary" title="Visualizar">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a [routerLink]="['/local', local.id_local]" class="btn btn-outline-primary"
+                                            title="Visualizar">
                                             <i class="bi bi-eye"></i>
+                                            <span class="d-none d-sm-inline ms-1">Ver</span>
                                         </a>
-                                        <button class="btn btn-sm btn-outline-secondary"
+                                        <button class="btn btn-outline-secondary"
                                             (click)="editarAnuncio(local.id_local)" title="Editar">
                                             <i class="bi bi-pencil"></i>
+                                            <span class="d-none d-sm-inline ms-1">Editar</span>
                                         </button>
-                                        <button class="btn btn-sm btn-outline-success" (click)="duplicarAnuncio(local)"
-                                            title="Duplicar">
-                                            <i class="bi bi-files"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-danger"
-                                            (click)="excluirAnuncio(local.id_local)" title="Excluir">
+                                        <button class="btn btn-outline-danger" (click)="excluirAnuncio(local.id_local)"
+                                            title="Excluir">
                                             <i class="bi bi-trash"></i>
+                                            <span class="d-none d-sm-inline ms-1">Excluir</span>
                                         </button>
                                     </div>
                                 </td>

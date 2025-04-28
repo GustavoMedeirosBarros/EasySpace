@@ -1,0 +1,179 @@
+<div class="container-fluid mt-4 mb-5">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">
+                <i class="bi bi-chat-dots me-2 text-warning"></i>
+                Chat
+            </h2>
+        </div>
+    </div>
+
+    <div class="text-center py-5" *ngIf="isLoading">
+        <div class="spinner-border text-warning" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+        <p class="mt-3">Carregando conversas...</p>
+    </div>
+
+    <div class="text-center py-5" *ngIf="!isLoading && !isLoggedIn">
+        <i class="bi bi-person-lock display-1 text-muted"></i>
+        <h3 class="mt-3">Você precisa estar logado para acessar o chat</h3>
+        <p class="text-muted">Faça login ou crie uma conta para conversar com proprietários e clientes</p>
+        <div class="mt-4">
+            <a routerLink="/login" [queryParams]="{redirect: 'chat'}" class="btn btn-primary me-2">Entrar</a>
+            <a routerLink="/register" class="btn btn-outline-primary">Criar conta</a>
+        </div>
+    </div>
+
+    <div class="row chat-container" *ngIf="!isLoading && isLoggedIn">
+        <div class="col-md-4 col-lg-3 chat-sidebar">
+            <div class="card h-100">
+                <div class="card-header">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Buscar conversas..."
+                            [(ngModel)]="searchTerm" (keyup)="filtrarConversas()">
+                        <button class="btn btn-outline-secondary" type="button" (click)="filtrarConversas()">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="text-center py-5" *ngIf="conversas.length === 0">
+                        <i class="bi bi-chat-left display-4 text-muted"></i>
+                        <p class="mt-3">Você ainda não tem conversas</p>
+                        <p class="text-muted">Faça uma reserva para iniciar uma conversa</p>
+                        <a routerLink="/explorar" class="btn btn-sm btn-outline-primary mt-2">
+                            Explorar espaços
+                        </a>
+                    </div>
+
+                    <div class="conversation-list" *ngIf="conversas.length > 0">
+                        <div *ngFor="let conversa of conversasFiltradas" class="conversation-item"
+                            [class.active]="conversaAtual?.id_conversa === conversa.id_conversa"
+                            [class.unread]="temNaoLidas(conversa)" (click)="abrirConversa(conversa)">
+                            <div class="conversation-avatar">
+                                <img *ngIf="getImagemContato(conversa)" [src]="getImagemContato(conversa)"
+                                    alt="Foto de perfil">
+                                <div *ngIf="!getImagemContato(conversa)" class="avatar-placeholder">
+                                    {{ getNomeContato(conversa).charAt(0) }}
+                                </div>
+                                <span class="status-indicator online"></span>
+                            </div>
+                            <div class="conversation-info">
+                                <div class="conversation-header">
+                                    <h6 class="mb-0">{{ getNomeContato(conversa) }}</h6>
+                                    <small class="text-muted" *ngIf="conversa.data_ultima_mensagem">
+                                        {{ formatarData(conversa.data_ultima_mensagem) }}
+                                    </small>
+                                </div>
+                                <p class="conversation-preview">
+                                    {{ conversa.ultima_mensagem || 'Nenhuma mensagem' }}
+                                </p>
+                                <div class="conversation-meta">
+                                    <small class="text-muted">{{ getLocalNome(conversa) }}</small>
+                                    <span class="badge bg-primary" *ngIf="temNaoLidas(conversa)">
+                                        {{ getNaoLidas(conversa) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center py-5" *ngIf="conversas.length > 0 && conversasFiltradas.length === 0">
+                        <i class="bi bi-search display-4 text-muted"></i>
+                        <p class="mt-3">Nenhum resultado encontrado</p>
+                        <button class="btn btn-sm btn-outline-secondary mt-2"
+                            (click)="searchTerm = ''; filtrarConversas()">
+                            Limpar busca
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8 col-lg-9 chat-main">
+            <div class="card h-100 d-flex align-items-center justify-content-center" *ngIf="!conversaAtual">
+                <div class="text-center p-5">
+                    <i class="bi bi-chat-square-text display-1 text-muted"></i>
+                    <h3 class="mt-4">Selecione uma conversa</h3>
+                    <p class="text-muted">Escolha uma conversa para começar a trocar mensagens</p>
+                </div>
+            </div>
+
+            <div class="card h-100" *ngIf="conversaAtual">
+                <div class="card-header chat-header">
+                    <div class="d-flex align-items-center">
+                        <div class="chat-avatar me-3">
+                            <img *ngIf="getImagemContato(conversaAtual)" [src]="getImagemContato(conversaAtual)"
+                                alt="Foto de perfil">
+                            <div *ngIf="!getImagemContato(conversaAtual)" class="avatar-placeholder">
+                                {{ getNomeContato(conversaAtual).charAt(0) }}
+                            </div>
+                            <span class="status-indicator online"></span>
+                        </div>
+                        <div>
+                            <h5 class="mb-0">{{ getNomeContato(conversaAtual) }}</h5>
+                            <small class="text-muted">{{ getLocalNome(conversaAtual) }}</small>
+                        </div>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-2"
+                            (click)="irParaLocal(conversaAtual.id_local)">
+                            <i class="bi bi-house-door me-1"></i>
+                            Ver local
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" *ngIf="conversaAtual.id_reserva"
+                            (click)="irParaReserva(conversaAtual.id_reserva || 0)">
+                            <i class="bi bi-calendar-check me-1"></i>
+                            Ver reserva
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body chat-body p-0">
+                    <div class="reservation-info" *ngIf="conversaAtual.id_reserva">
+                        <i class="bi bi-calendar-check me-2"></i>
+                        {{ getReservaInfo(conversaAtual) }}
+                    </div>
+
+                    <div class="chat-messages" #chatMessages>
+                        <div class="text-center py-4" *ngIf="mensagens.length === 0">
+                            <p class="text-muted">Nenhuma mensagem ainda. Comece a conversa!</p>
+                        </div>
+
+                        <div *ngFor="let mensagem of mensagens" class="message-container"
+                            [class.outgoing]="isRemetente(mensagem)" [class.incoming]="!isRemetente(mensagem)">
+                            <div class="message-avatar" *ngIf="!isRemetente(mensagem)">
+                                <img *ngIf="getImagemRemetente(mensagem)" [src]="getImagemRemetente(mensagem)"
+                                    alt="Foto de perfil">
+                                <div *ngIf="!getImagemRemetente(mensagem)" class="avatar-placeholder">
+                                    {{ getNomeRemetente(mensagem).charAt(0) }}
+                                </div>
+                            </div>
+                            <div class="message-content">
+                                <div class="message-bubble">
+                                    {{ mensagem.conteudo }}
+                                </div>
+                                <div class="message-info">
+                                    <small class="message-time">{{ formatarData(mensagem.data_envio) }}</small>
+                                    <i class="bi bi-check-all message-status" [class.read]="mensagem.lida"
+                                        *ngIf="isRemetente(mensagem)"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer chat-footer">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Digite sua mensagem..."
+                            [(ngModel)]="novaMensagem" (keyup.enter)="enviarMensagem()">
+                        <button class="btn btn-primary" type="button" (click)="enviarMensagem()">
+                            <i class="bi bi-send"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

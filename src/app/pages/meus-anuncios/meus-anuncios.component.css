@@ -43,8 +43,9 @@
 
 @media (max-width: 767.98px) {
     .table-responsive {
-        border-radius: 8px;
-        overflow: hidden;
+        border: none;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .anuncio-thumbnail {
@@ -52,7 +53,61 @@
         height: 40px;
     }
 
+    .btn-group {
+        display: flex;
+        flex-wrap: nowrap;
+    }
+
     .btn-group .btn {
-        padding: 0.2rem 0.4rem;
+        padding: 0.25rem;
+        min-width: 36px;
+    }
+
+    .btn-group .btn i {
+        font-size: 0.8rem;
+        margin: 0;
+    }
+
+    .btn-group .btn span {
+        display: none;
+    }
+
+    /* Adicione uma sombra para indicar que há mais conteúdo para rolar */
+    .table-responsive {
+        position: relative;
+    }
+
+    .table-responsive::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 30px;
+        background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+        pointer-events: none;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .btn-group .btn {
+        padding: 0.2rem;
+        min-width: 32px;
+    }
+
+    .anuncio-thumbnail {
+        width: 32px;
+        height: 32px;
+        margin-right: 0.5rem !important;
+    }
+
+    .table td:first-child,
+    .table th:first-child {
+        padding-left: 0.5rem;
+    }
+
+    .table td:last-child,
+    .table th:last-child {
+        padding-right: 0.5rem;
     }
 }

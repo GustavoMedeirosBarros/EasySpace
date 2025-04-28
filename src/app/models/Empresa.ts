@@ -9,4 +9,5 @@ export interface Empresa {
     cnpj: string
     telefone_empresa: string
     senha_empresa: string
+    foto_perfil?: string
 }
