@@ -1,6 +1,6 @@
 # EasySpace
 
-![EasySpace Logo](Logo.png)
+![EasySpace Logo](public/Logo.png)
 
 ## Plataforma de Compartilhamento de Espaços para Locação em Sorocaba
 
