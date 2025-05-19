@@ -40,15 +40,15 @@ export class ReservarLocalComponent implements OnInit {
   isLoading = true
   errorMessage = ""
   successMessage = ""
-  currentStep = 1
+  currentStep = 1 // 1: Detalhes da reserva, 2: Pagamento, 3: Confirmação
   valorTotal = 0
   isSubmitting = false
   horariosDisponiveis: string[] = []
   diasDisponiveis: Date[] = []
-  datasIndisponiveis: Date[] = []
-  minDate = new Date()
-  maxDate = new Date(new Date().setMonth(new Date().getMonth() + 6))
-  mostrarDataFim = false;
+  datasIndisponiveis: Date[] = [] // Datas que não estão disponíveis
+  minDate = new Date() // Data mínima é hoje
+  maxDate = new Date(new Date().setMonth(new Date().getMonth() + 6)) // Data máxima é 6 meses a partir de hoje
+  mostrarDataFim = false; // Controla se deve mostrar o campo de data fim
 
   constructor(
     private fb: FormBuilder,
@@ -59,10 +59,12 @@ export class ReservarLocalComponent implements OnInit {
     private dateAdapter: DateAdapter<Date>,
     @Inject(LOCALE_ID) private locale: string
   ) {
-    this.dateAdapter.setLocale('pt-BR');
+    // Configurar o adaptador de data para usar o locale pt-BR
+    this.dateAdapter.setLocale("pt-BR");
   }
 
   ngOnInit(): void {
+    // Verificar se o usuário está logado
     if (!this.authService.isLoggedIn) {
       this.router.navigate(["/login"], {
         queryParams: {
@@ -73,31 +75,38 @@ export class ReservarLocalComponent implements OnInit {
       return
     }
 
+    // Inicializar formulários
     this.initForms()
 
+    // Obter o ID do local da URL
     this.route.params.subscribe((params) => {
       this.localId = +params["id"]
       this.loadLocalData()
     })
 
+    // Gerar horários disponíveis (simulação)
     this.gerarHorariosDisponiveis()
 
+    // Gerar dias disponíveis (próximos 30 dias)
     this.gerarDiasDisponiveis()
 
+    // Gerar datas indisponíveis (simulação)
     this.gerarDatasIndisponiveis()
   }
 
   initForms(): void {
+    // Formulário de reserva com validadores básicos
     this.reservaForm = this.fb.group({
       data_inicio: ["", Validators.required],
       data_fim: [""],
-      horario_inicio: ["", Validators.required],
+      horario_inicio: [""],
       horario_fim: [""],
       quantidade_pessoas: [1, [Validators.required, Validators.min(1)]],
       observacoes: [""],
       multiplos_dias: [false],
     })
 
+    // Formulário de pagamento
     this.pagamentoForm = this.fb.group({
       numero_cartao: ["", [Validators.required, Validators.pattern(/^\d{16}$/)]],
       nome_titular: ["", Validators.required],
@@ -107,20 +116,32 @@ export class ReservarLocalComponent implements OnInit {
       aceito_termos: [false, Validators.requiredTrue],
     })
 
+    // Observar mudanças nos campos para calcular valor total
     this.reservaForm.valueChanges.subscribe(() => {
       this.calcularValorTotal()
     })
 
+    // Observar mudanças no campo multiplos_dias
     this.reservaForm.get("multiplos_dias")?.valueChanges.subscribe((value) => {
       this.mostrarDataFim = value
 
       if (value && this.reservaForm.get("data_inicio")?.value) {
+        // Se ativar múltiplos dias e já tiver data de início, define data fim como data início + 1 dia
         const dataInicio = new Date(this.reservaForm.get("data_inicio")?.value)
         const dataFim = new Date(dataInicio)
         dataFim.setDate(dataInicio.getDate() + 1)
         this.reservaForm.get("data_fim")?.setValue(dataFim)
+
+        // Adicionar validador para data_fim
+        if (this.local?.tipo_locacao === "dia") {
+          this.reservaForm.get("data_fim")?.setValidators([Validators.required])
+          this.reservaForm.get("data_fim")?.updateValueAndValidity()
+        }
       } else if (!value) {
+        // Se desativar múltiplos dias, limpa a data de fim e remove validadores
         this.reservaForm.get("data_fim")?.setValue(null)
+        this.reservaForm.get("data_fim")?.clearValidators()
+        this.reservaForm.get("data_fim")?.updateValueAndValidity()
       }
 
       this.calcularValorTotal()
@@ -130,6 +151,7 @@ export class ReservarLocalComponent implements OnInit {
   loadLocalData(): void {
     this.isLoading = true
 
+    // Obter dados do local
     const local = this.mockDataService.getLocalById(this.localId)
 
     if (!local) {
@@ -141,6 +163,10 @@ export class ReservarLocalComponent implements OnInit {
     this.local = local
     this.isLoading = false
 
+    // Ajustar validadores com base no tipo de locação
+    this.ajustarValidadoresPorTipoLocacao(local.tipo_locacao)
+
+    // Se o tipo de locação for por dia, habilita a opção de múltiplos dias por padrão
     if (local.tipo_locacao === "dia") {
       this.reservaForm.get("multiplos_dias")?.setValue(true)
       this.mostrarDataFim = true
@@ -149,7 +175,28 @@ export class ReservarLocalComponent implements OnInit {
     this.calcularValorTotal()
   }
 
+  ajustarValidadoresPorTipoLocacao(tipoLocacao: string): void {
+    // Remover todos os validadores primeiro
+    this.reservaForm.get("horario_inicio")?.clearValidators()
+    this.reservaForm.get("horario_fim")?.clearValidators()
+    this.reservaForm.get("data_fim")?.clearValidators()
+
+    // Adicionar validadores específicos com base no tipo de locação
+    if (tipoLocacao === "hora") {
+      this.reservaForm.get("horario_inicio")?.setValidators([Validators.required])
+      this.reservaForm.get("horario_fim")?.setValidators([Validators.required])
+    } else if (tipoLocacao === "dia" && this.mostrarDataFim) {
+      this.reservaForm.get("data_fim")?.setValidators([Validators.required])
+    }
+
+    // Atualizar o estado dos controles
+    this.reservaForm.get("horario_inicio")?.updateValueAndValidity()
+    this.reservaForm.get("horario_fim")?.updateValueAndValidity()
+    this.reservaForm.get("data_fim")?.updateValueAndValidity()
+  }
+
   gerarHorariosDisponiveis(): void {
+    // Simulação de horários disponíveis
     const horarios = []
     for (let hora = 8; hora <= 22; hora++) {
       horarios.push(`${hora.toString().padStart(2, "0")}:00`)
@@ -158,6 +205,7 @@ export class ReservarLocalComponent implements OnInit {
   }
 
   gerarDiasDisponiveis(): void {
+    // Gerar próximos 30 dias como disponíveis
     const dias = []
     const hoje = new Date()
     for (let i = 1; i <= 30; i++) {
@@ -169,11 +217,13 @@ export class ReservarLocalComponent implements OnInit {
   }
 
   gerarDatasIndisponiveis(): void {
+    // Simulação de datas indisponíveis (aleatórias)
     const datasIndisponiveis = []
     const hoje = new Date()
 
+    // Gerar 10 datas aleatórias indisponíveis nos próximos 6 meses
     for (let i = 0; i < 10; i++) {
-      const randomDays = Math.floor(Math.random() * 180) + 1
+      const randomDays = Math.floor(Math.random() * 180) + 1 // Entre 1 e 180 dias
       const dataIndisponivel = new Date(hoje)
       dataIndisponivel.setDate(hoje.getDate() + randomDays)
       datasIndisponiveis.push(dataIndisponivel)
@@ -182,9 +232,11 @@ export class ReservarLocalComponent implements OnInit {
     this.datasIndisponiveis = datasIndisponiveis
   }
 
+  // Filtro para o datepicker - retorna false para datas indisponíveis
   dateFilter = (date: Date | null): boolean => {
     if (!date) return false
 
+    // Verificar se a data está na lista de indisponíveis
     return !this.datasIndisponiveis.some(
       (dataIndisponivel) =>
         date.getDate() === dataIndisponivel.getDate() &&
@@ -193,13 +245,16 @@ export class ReservarLocalComponent implements OnInit {
     )
   }
 
+  // Manipulador de evento para seleção de data
   onDateSelection(event: any, controlName: string): void {
     const selectedDate = event.value
     this.reservaForm.get(controlName)?.setValue(selectedDate)
 
+    // Se for data de início e múltiplos dias estiver ativado
     if (controlName === "data_inicio" && this.mostrarDataFim) {
       const dataFim = this.reservaForm.get("data_fim")?.value
       if (!dataFim || new Date(dataFim) <= new Date(selectedDate)) {
+        // Definir data de fim como data de início + 1 dia
         const novaDataFim = new Date(selectedDate)
         novaDataFim.setDate(novaDataFim.getDate() + 1)
         this.reservaForm.get("data_fim")?.setValue(novaDataFim)
@@ -211,48 +266,91 @@ export class ReservarLocalComponent implements OnInit {
 
   calcularValorTotal(): void {
     if (!this.local) return
-
     const formValues = this.reservaForm.value
     const valorBase = this.local.valor
+    let valorSubtotal = 0
 
+    // Se o tipo de locação for por hora
     if (this.local.tipo_locacao === "hora" && formValues.horario_inicio && formValues.horario_fim) {
       const horaInicio = Number.parseInt(formValues.horario_inicio.split(":")[0], 10)
       const horaFim = Number.parseInt(formValues.horario_fim.split(":")[0], 10)
-      const horas = horaFim > horaInicio ? horaFim - horaInicio : 0
-      this.valorTotal = valorBase * horas
+
+      // Verificar se o horário de fim é maior que o de início
+      if (horaFim > horaInicio) {
+        const horas = horaFim - horaInicio
+        valorSubtotal = valorBase * horas
+      } else {
+        valorSubtotal = 0 // Horário inválido
+      }
     }
+    // Se múltiplos dias estiver ativado e tiver data início e fim
     else if (formValues.multiplos_dias && formValues.data_inicio && formValues.data_fim) {
       const dataInicio = new Date(formValues.data_inicio)
       const dataFim = new Date(formValues.data_fim)
       const diffTime = Math.abs(dataFim.getTime() - dataInicio.getTime())
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1
-      this.valorTotal = valorBase * diffDays
+      valorSubtotal = valorBase * diffDays
     }
+    // Se o tipo de locação for por dia (sem múltiplos dias)
     else if (this.local.tipo_locacao === "dia" && formValues.data_inicio) {
-      this.valorTotal = valorBase
+      valorSubtotal = valorBase // Um dia
     }
+    // Se o tipo de locação for por mês
     else if (this.local.tipo_locacao === "mes") {
-      this.valorTotal = valorBase
+      valorSubtotal = valorBase
     }
+    // Caso padrão (pelo menos 1 unidade)
     else {
-      this.valorTotal = valorBase
+      valorSubtotal = valorBase
     }
 
-    const taxaServico = this.valorTotal * 0.1
-    this.valorTotal += taxaServico
+    // Calcular taxa de serviço (10% do subtotal)
+    const taxaServico = valorSubtotal * 0.1
+
+    // Valor total é o subtotal + taxa de serviço
+    this.valorTotal = valorSubtotal + taxaServico
   }
 
   nextStep(): void {
     if (this.currentStep === 1) {
-      if (this.reservaForm.invalid) {
-        Object.keys(this.reservaForm.controls).forEach((key) => {
-          const control = this.reservaForm.get(key)
-          control?.markAsTouched()
-        })
+      // Verificar apenas os campos relevantes com base no tipo de locação
+      let formValido = true
+
+      // Verificar data_inicio (sempre obrigatório)
+      if (!this.reservaForm.get("data_inicio")?.valid) {
+        this.reservaForm.get("data_inicio")?.markAsTouched()
+        formValido = false
+      }
+
+      // Verificar quantidade_pessoas (sempre obrigatório)
+      if (!this.reservaForm.get("quantidade_pessoas")?.valid) {
+        this.reservaForm.get("quantidade_pessoas")?.markAsTouched()
+        formValido = false
+      }
+
+      // Verificar campos específicos por tipo de locação
+      if (this.local?.tipo_locacao === "hora") {
+        if (!this.reservaForm.get("horario_inicio")?.valid) {
+          this.reservaForm.get("horario_inicio")?.markAsTouched()
+          formValido = false
+        }
+        if (!this.reservaForm.get("horario_fim")?.valid) {
+          this.reservaForm.get("horario_fim")?.markAsTouched()
+          formValido = false
+        }
+      } else if (this.local?.tipo_locacao === "dia" && this.mostrarDataFim) {
+        if (!this.reservaForm.get("data_fim")?.valid) {
+          this.reservaForm.get("data_fim")?.markAsTouched()
+          formValido = false
+        }
+      }
+
+      if (!formValido) {
         this.errorMessage = "Por favor, preencha todos os campos obrigatórios."
         return
       }
 
+      // Verificar se a data de fim é posterior à data de início
       if (this.mostrarDataFim && this.reservaForm.value.data_inicio && this.reservaForm.value.data_fim) {
         const dataInicio = new Date(this.reservaForm.value.data_inicio)
         const dataFim = new Date(this.reservaForm.value.data_fim)
@@ -262,6 +360,7 @@ export class ReservarLocalComponent implements OnInit {
         }
       }
 
+      // Verificar se o horário de fim é posterior ao horário de início
       if (
         this.local?.tipo_locacao === "hora" &&
         this.reservaForm.value.horario_inicio &&
@@ -280,6 +379,7 @@ export class ReservarLocalComponent implements OnInit {
       window.scrollTo(0, 0)
     } else if (this.currentStep === 2) {
       if (this.pagamentoForm.invalid) {
+        // Marcar todos os campos como tocados para mostrar erros
         Object.keys(this.pagamentoForm.controls).forEach((key) => {
           const control = this.pagamentoForm.get(key)
           control?.markAsTouched()
@@ -305,18 +405,21 @@ export class ReservarLocalComponent implements OnInit {
     this.errorMessage = ""
     this.successMessage = ""
 
+    // Verificar se o usuário está logado
     if (!this.authService.isLoggedIn) {
       this.errorMessage = "Você precisa estar logado para fazer uma reserva."
       this.isSubmitting = false
       return
     }
 
+    // Verificar se o local existe
     if (!this.local) {
       this.errorMessage = "Local não encontrado."
       this.isSubmitting = false
       return
     }
 
+    // Obter o usuário logado
     const usuario = this.authService.getCurrentUsuario()
     if (!usuario) {
       this.errorMessage = "Erro ao obter dados do usuário."
@@ -324,8 +427,9 @@ export class ReservarLocalComponent implements OnInit {
       return
     }
 
+    // Preparar dados da reserva
     const reservaData: Reserva = {
-      id_reserva: 0,
+      id_reserva: 0, // Será definido pelo serviço
       id_local: this.local.id_local,
       id_usuario: usuario.id_usuario,
       data_inicio: new Date(this.reservaForm.value.data_inicio),
@@ -343,6 +447,7 @@ export class ReservarLocalComponent implements OnInit {
       metodo_pagamento: "Cartão de Crédito",
     }
 
+    // Preparar dados do pagamento
     const pagamentoData: DadosPagamento = {
       numero_cartao: this.pagamentoForm.value.numero_cartao,
       nome_titular: this.pagamentoForm.value.nome_titular,
@@ -351,10 +456,13 @@ export class ReservarLocalComponent implements OnInit {
       parcelas: this.pagamentoForm.value.parcelas,
     }
 
+    // Simular processamento de pagamento
     setTimeout(() => {
       try {
+        // Adicionar a reserva
         const reserva = this.mockDataService.addReserva(reservaData)
 
+        // Adicionar uma notificação para o proprietário
         if (this.local?.id_usuario) {
           this.mockDataService.addNotificacao({
             id_notificacao: 0,
@@ -381,6 +489,7 @@ export class ReservarLocalComponent implements OnInit {
           })
         }
 
+        // Adicionar uma notificação para o usuário
         this.mockDataService.addNotificacao({
           id_notificacao: 0,
           id_usuario: usuario.id_usuario,
@@ -427,6 +536,7 @@ export class ReservarLocalComponent implements OnInit {
   }
 
   irParaChat(): void {
+    // Redirecionar para o chat com o proprietário
     this.router.navigate(["/chat"], {
       queryParams: { localId: this.localId },
     })
@@ -445,6 +555,7 @@ export class ReservarLocalComponent implements OnInit {
     return data.toLocaleDateString("pt-BR")
   }
 
+  // Retorna o período da reserva formatado para exibição
   getPeriodoReserva(): string {
     if (!this.reservaForm.value.data_inicio) return "Período não definido"
 
@@ -461,7 +572,8 @@ export class ReservarLocalComponent implements OnInit {
   }
 
   getMinDateForEndDate(): Date {
-    const dataInicio = this.reservaForm.get('data_inicio')?.value;
-    return dataInicio ? new Date(dataInicio) : this.minDate;
+    return this.reservaForm.get('data_inicio')?.value ?
+      new Date(this.reservaForm.get('data_inicio')?.value) :
+      this.minDate;
   }
 }

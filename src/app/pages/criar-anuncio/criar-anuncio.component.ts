@@ -7,6 +7,8 @@ import { CommonModule } from '@angular/common';
 import { Local } from '../../models/Local';
 import { Empresa } from '../../models/Empresa';
 import { Usuario } from '../../models/Usuario';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { finalize } from "rxjs/operators"
 
 interface Categoria {
   id: string
@@ -14,9 +16,24 @@ interface Categoria {
   icon: string
 }
 
+interface ViaCepResponse {
+  cep: string
+  logradouro: string
+  complemento: string
+  bairro: string
+  localidade: string
+  uf: string
+  ibge: string
+  gia: string
+  ddd: string
+  siafi: string
+  erro?: boolean
+}
+
 @Component({
   selector: 'app-criar-anuncio',
-  imports: [ReactiveFormsModule, CommonModule],
+  standalone: true,
+  imports: [ReactiveFormsModule, CommonModule, HttpClientModule],
   templateUrl: './criar-anuncio.component.html',
   styleUrl: './criar-anuncio.component.css'
 })
@@ -36,18 +53,24 @@ export class CriarAnuncioComponent implements OnInit {
   previewImage: string | null = null
   isSubmitting = false
   isLoggedIn = false
+  isLoadingCep = false
+  cepError: string | null = null
+  categoriaSelecionada = ""
 
   constructor(
     private fb: FormBuilder,
     private mockDataService: MockDataService,
     private authService: AuthService,
     private router: Router,
+    private http: HttpClient,
   ) { }
 
   ngOnInit(): void {
+    // Verificar se o usuário está logado
     this.authService.isLoggedIn$.subscribe((status) => {
       this.isLoggedIn = status
       if (!status) {
+        // Redirecionar para a página de login se não estiver logado
         this.router.navigate(["/login"], {
           queryParams: {
             redirect: "criar-anuncio",
@@ -57,10 +80,13 @@ export class CriarAnuncioComponent implements OnInit {
       }
     })
 
-    this.categorias = this.mockDataService.getCategorias()
-      .filter((cat) => cat.id !== "todos");
+    // Carregar categorias do serviço
+    this.categorias = this.mockDataService.getCategorias().filter((cat) => cat.id !== "todos")
 
+    // Carregar comodidades disponíveis
     this.loadComodidades()
+
+    // Inicializar o formulário
     this.initializeForm()
   }
 
@@ -70,6 +96,7 @@ export class CriarAnuncioComponent implements OnInit {
     this.comodidades = comodidadesArray.map((comodidade) => {
       let name = comodidade
 
+      // Formata o nome da comodidade para exibição
       switch (comodidade) {
         case "wifi":
           name = "Wi-Fi"
@@ -139,6 +166,12 @@ export class CriarAnuncioComponent implements OnInit {
 
   selectCategory(category: string): void {
     this.selectedCategory = category
+    // Atualizar o nome da categoria selecionada para exibição
+    const categoriaEncontrada = this.categorias.find((c) => c.id === category)
+    if (categoriaEncontrada) {
+      this.categoriaSelecionada = categoriaEncontrada.name
+    }
+
     this.anuncioForm.patchValue({
       tipo_local: category,
     })
@@ -153,6 +186,7 @@ export class CriarAnuncioComponent implements OnInit {
       this.selectedComodidades.splice(index, 1)
     }
 
+    // Atualizar o valor no formulário
     this.anuncioForm.patchValue({
       comodidades: this.selectedComodidades,
     })
@@ -190,6 +224,7 @@ export class CriarAnuncioComponent implements OnInit {
     if (this.step === 1 || this.anuncioForm.valid) {
       this.step++
     } else {
+      // Marcar todos os campos como tocados para mostrar erros
       Object.keys(this.anuncioForm.controls).forEach((key) => {
         const control = this.anuncioForm.get(key)
         control?.markAsTouched()
@@ -203,6 +238,7 @@ export class CriarAnuncioComponent implements OnInit {
 
   submitForm(): void {
     if (this.anuncioForm.invalid) {
+      // Marcar todos os campos como tocados para mostrar erros
       Object.keys(this.anuncioForm.controls).forEach((key) => {
         const control = this.anuncioForm.get(key)
         control?.markAsTouched()
@@ -212,6 +248,7 @@ export class CriarAnuncioComponent implements OnInit {
 
     this.isSubmitting = true
 
+    // Se o usuário não está logado, redirecionar para login
     if (!this.isLoggedIn) {
       this.router.navigate(["/login"], {
         queryParams: {
@@ -222,22 +259,28 @@ export class CriarAnuncioComponent implements OnInit {
       return
     }
 
+    // Preparar dados do formulário
     const formData = this.anuncioForm.value
 
+    // Definir o tipo de usuário (empresa ou pessoa física)
     const isEmpresa = this.authService.isEmpresa()
 
+    // Obter ID do usuário logado
     const currentUser = this.authService.currentUser
     let userId = 0
     let empresaId = 0
 
-    if (isEmpresa) {
-      empresaId = (currentUser as Empresa)?.id_empresa || 0;
-    } else {
-      userId = (currentUser as Usuario)?.id_usuario || 0;
+    if (isEmpresa && currentUser) {
+      // Se for empresa, usar o id_empresa
+      empresaId = "id_empresa" in currentUser ? currentUser.id_empresa : 0
+    } else if (currentUser) {
+      // Se for usuário comum, usar o id_usuario
+      userId = "id_usuario" in currentUser ? currentUser.id_usuario : 0
     }
 
+    // Criar objeto do novo local
     const novoLocal: Local = {
-      id_local: 0,
+      id_local: 0, // Será definido pelo serviço
       nome_local: formData.nome_local,
       imagem_local: formData.imagem_local || "assets/images/default_space.jpg",
       cep: formData.cep,
@@ -251,7 +294,7 @@ export class CriarAnuncioComponent implements OnInit {
       tipo_local: formData.tipo_local,
       tipo_locacao: formData.tipo_locacao,
       data_disponibilidade: formData.data_disponibilidade,
-      avaliacao: 0,
+      avaliacao: 0, // Nova listagem, sem avaliações
       id_empresa: empresaId,
       id_usuario: userId,
       latitude: formData.latitude,
@@ -259,9 +302,12 @@ export class CriarAnuncioComponent implements OnInit {
       comodidades: formData.comodidades,
     }
 
+    // Simular um atraso para demonstrar o loading
     setTimeout(() => {
+      // Adicionar o local ao "banco de dados"
       this.mockDataService.addLocal(novoLocal)
 
+      // Redirecionar para a página de sucesso ou para a listagem do local
       this.router.navigate(["/meus-anuncios"], {
         queryParams: { success: true, message: "Anúncio criado com sucesso!" },
       })
@@ -297,17 +343,83 @@ export class CriarAnuncioComponent implements OnInit {
   consultaCep(): void {
     const cep = this.anuncioForm.get("cep")?.value
 
-    if (cep && cep.length >= 8) {
-      setTimeout(() => {
-        this.anuncioForm.patchValue({
-          cidade_local: "Sorocaba",
-          estado_local: "SP",
-        })
-      }, 800)
+    if (!cep || cep.length < 8) {
+      return
     }
+
+    // Formatar o CEP removendo caracteres não numéricos
+    const cepLimpo = cep.replace(/\D/g, "")
+
+    // Mostrar indicador de carregamento
+    this.isLoadingCep = true
+    this.cepError = null
+
+    // Fazer a chamada à API ViaCEP
+    this.http
+      .get<ViaCepResponse>(`https://viacep.com.br/ws/${cepLimpo}/json/`)
+      .pipe(
+        finalize(() => {
+          this.isLoadingCep = false
+        }),
+      )
+      .subscribe({
+        next: (dados) => {
+          if (!dados.erro) {
+            // Preencher os campos do formulário com os dados retornados
+            this.anuncioForm.patchValue({
+              endereco_local: dados.logradouro,
+              cidade_local: dados.localidade,
+              estado_local: dados.uf,
+            })
+
+            // Obter as coordenadas geográficas a partir do endereço completo
+            this.obterCoordenadas(dados)
+          } else {
+            // Mostrar mensagem de erro
+            this.cepError = "CEP não encontrado"
+          }
+        },
+        error: (erro) => {
+          console.error("Erro ao consultar CEP:", erro)
+          this.cepError = "Erro ao consultar CEP. Tente novamente."
+        },
+      })
   }
-  getCategoryName(categoryId: string | null): string {
-    const category = this.categorias.find(c => c.id === categoryId);
-    return category ? category.name : '';
+
+  obterCoordenadas(dadosCep: ViaCepResponse): void {
+    // Montar o endereço completo para geocodificação
+    const endereco = `${dadosCep.logradouro}, ${dadosCep.localidade}, ${dadosCep.uf}, ${dadosCep.cep}, Brasil`
+
+    // Usar a API de Geocodificação do Nominatim (OpenStreetMap)
+    this.http
+      .get<any[]>(`https://nominatim.openstreetmap.org/search`, {
+        params: {
+          q: endereco,
+          format: "json",
+          limit: 1,
+        },
+        headers: {
+          "Accept-Language": "pt-BR",
+        },
+      })
+      .subscribe({
+        next: (resultado) => {
+          if (resultado && resultado.length > 0) {
+            const latitude = Number.parseFloat(resultado[0].lat)
+            const longitude = Number.parseFloat(resultado[0].lon)
+
+            // Atualizar o formulário com as coordenadas
+            this.anuncioForm.patchValue({
+              latitude: latitude,
+              longitude: longitude,
+            })
+
+            console.log(`Coordenadas obtidas: ${latitude}, ${longitude}`)
+          }
+        },
+        error: (erro) => {
+          console.error("Erro ao obter coordenadas:", erro)
+        },
+      })
   }
 }

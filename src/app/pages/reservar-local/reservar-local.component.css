@@ -1,3 +1,6 @@
+/* Estilos para o componente de reserva */
+
+/* Estilos para o card de resumo */
 .summary-card {
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -14,6 +17,7 @@
     font-size: 0.95rem;
 }
 
+/* Estilos para o card de informações */
 .info-card {
     border-radius: 10px;
     background-color: #f8f9fa;
@@ -34,6 +38,7 @@
     border-bottom: none;
 }
 
+/* Estilos para os passos de progresso */
 .progress-steps {
     display: flex;
     align-items: center;
@@ -119,6 +124,7 @@
     text-align: left;
 }
 
+/* Estilos para o calendário */
 ::ng-deep .mat-calendar-body-selected {
     background-color: #8e44ad !important;
     color: white !important;
@@ -148,6 +154,7 @@
     color: #8e44ad !important;
 }
 
+/* Estilos para as datas disponíveis/indisponíveis */
 .calendar-legend {
     display: flex;
     align-items: center;

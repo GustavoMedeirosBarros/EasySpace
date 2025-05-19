@@ -7,25 +7,27 @@
                 <i class="bi bi-chevron-down ms-2"></i>
             </h2>
 
+            <!-- Step 1: Seleção de Categoria -->
             <div *ngIf="step === 1">
                 <h3 class="mb-4">Como classifica seu lugar?</h3>
 
                 <div class="categories row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
                     <div class="col" *ngFor="let categoria of categorias">
                         <div class="category-card" (click)="selectCategory(categoria.id)">
-                            <i class="bi {{ categoria.icon }} me-2"></i>
                             {{ categoria.name }}
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Step 2: Detalhes do Anúncio -->
             <div *ngIf="step === 2">
                 <form [formGroup]="anuncioForm" (ngSubmit)="submitForm()">
                     <div class="card">
                         <div class="card-body">
                             <h3 class="card-title mb-4">Nós dê algumas informações sobre o local</h3>
 
+                            <!-- Título -->
                             <div class="mb-3">
                                 <label for="titulo" class="form-label">Título</label>
                                 <input type="text" class="form-control" id="titulo" formControlName="nome_local"
@@ -40,6 +42,7 @@
                                 </div>
                             </div>
 
+                            <!-- Capacidade -->
                             <div class="mb-3">
                                 <label for="capacidade" class="form-label">Capacidade</label>
                                 <input type="number" class="form-control" id="capacidade" placeholder="100 pessoas"
@@ -50,6 +53,7 @@
                                 </div>
                             </div>
 
+                            <!-- Descrição -->
                             <div class="mb-3">
                                 <label for="descricao" class="form-label">Sobre o local</label>
                                 <textarea class="form-control" id="descricao" rows="5"
@@ -66,13 +70,15 @@
                                 </div>
                             </div>
 
+                            <!-- Categoria selecionada -->
                             <div class="mb-3">
                                 <label class="form-label">Categoria</label>
                                 <div class="categoria-selecionada">
-                                    {{ getCategoryName(selectedCategory) }}
+                                    {{ categoriaSelecionada }}
                                 </div>
                             </div>
 
+                            <!-- Fotos -->
                             <div class="mb-3">
                                 <label class="form-label">Foto (Máximo 10)</label>
                                 <div class="foto-upload">
@@ -101,58 +107,79 @@
                                 </div>
                             </div>
 
+                            <!-- Localização -->
                             <div class="mb-3">
                                 <label for="cep" class="form-label">Localização</label>
-                                <input type="text" class="form-control mb-2" id="cep" placeholder="00000-000 (CEP)"
-                                    formControlName="cep"
-                                    [ngClass]="{'is-invalid': anuncioForm.get('cep')?.invalid && anuncioForm.get('cep')?.touched}"
-                                    (blur)="consultaCep()">
-                                <div class="invalid-feedback" *ngIf="anuncioForm.get('cep')?.errors?.['required']">
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control" id="cep" placeholder="00000-000 (CEP)"
+                                        formControlName="cep"
+                                        [ngClass]="{'is-invalid': (anuncioForm.get('cep')?.invalid && anuncioForm.get('cep')?.touched) || cepError}"
+                                        (blur)="consultaCep()">
+                                    <span class="input-group-text" *ngIf="isLoadingCep">
+                                        <span class="spinner-border spinner-border-sm" role="status"
+                                            aria-hidden="true"></span>
+                                    </span>
+                                    <span class="input-group-text"
+                                        *ngIf="!isLoadingCep && anuncioForm.get('cep')?.valid && !cepError">
+                                        <i class="bi bi-check-circle-fill text-success"></i>
+                                    </span>
+                                </div>
+                                <div class="invalid-feedback"
+                                    *ngIf="anuncioForm.get('cep')?.errors?.['required'] && anuncioForm.get('cep')?.touched">
                                     CEP é obrigatório
                                 </div>
-                                <div class="invalid-feedback" *ngIf="anuncioForm.get('cep')?.errors?.['pattern']">
+                                <div class="invalid-feedback"
+                                    *ngIf="anuncioForm.get('cep')?.errors?.['pattern'] && anuncioForm.get('cep')?.touched">
                                     CEP inválido
                                 </div>
+                                <div class="invalid-feedback" *ngIf="cepError">
+                                    {{ cepError }}
+                                </div>
+                                <small class="text-muted">Digite o CEP para preencher automaticamente o endereço</small>
+                            </div>
 
-                                <div class="row mb-2">
-                                    <div class="col-md-8">
-                                        <input type="text" class="form-control" placeholder="Endereço"
-                                            formControlName="endereco_local"
-                                            [ngClass]="{'is-invalid': anuncioForm.get('endereco_local')?.invalid && anuncioForm.get('endereco_local')?.touched}">
-                                        <div class="invalid-feedback">
-                                            Endereço é obrigatório
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <input type="text" class="form-control" placeholder="Número"
-                                            formControlName="numero_local"
-                                            [ngClass]="{'is-invalid': anuncioForm.get('numero_local')?.invalid && anuncioForm.get('numero_local')?.touched}">
-                                        <div class="invalid-feedback">
-                                            Número é obrigatório
-                                        </div>
+                            <!-- Endereço -->
+                            <div class="row mb-3">
+                                <div class="col-md-8">
+                                    <label for="endereco" class="form-label">Endereço</label>
+                                    <input type="text" class="form-control" id="endereco"
+                                        formControlName="endereco_local"
+                                        [ngClass]="{'is-invalid': anuncioForm.get('endereco_local')?.invalid && anuncioForm.get('endereco_local')?.touched}">
+                                    <div class="invalid-feedback">
+                                        Endereço é obrigatório
                                     </div>
                                 </div>
-
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <input type="text" class="form-control" placeholder="Cidade"
-                                            formControlName="cidade_local"
-                                            [ngClass]="{'is-invalid': anuncioForm.get('cidade_local')?.invalid && anuncioForm.get('cidade_local')?.touched}">
-                                        <div class="invalid-feedback">
-                                            Cidade é obrigatória
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <input type="text" class="form-control" placeholder="Estado"
-                                            formControlName="estado_local"
-                                            [ngClass]="{'is-invalid': anuncioForm.get('estado_local')?.invalid && anuncioForm.get('estado_local')?.touched}">
-                                        <div class="invalid-feedback">
-                                            Estado é obrigatório
-                                        </div>
+                                <div class="col-md-4">
+                                    <label for="numero" class="form-label">Número</label>
+                                    <input type="text" class="form-control" id="numero" formControlName="numero_local"
+                                        [ngClass]="{'is-invalid': anuncioForm.get('numero_local')?.invalid && anuncioForm.get('numero_local')?.touched}">
+                                    <div class="invalid-feedback">
+                                        Número é obrigatório
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Cidade e Estado -->
+                            <div class="row mb-3">
+                                <div class="col-md-8">
+                                    <label for="cidade" class="form-label">Cidade</label>
+                                    <input type="text" class="form-control" id="cidade" formControlName="cidade_local"
+                                        [ngClass]="{'is-invalid': anuncioForm.get('cidade_local')?.invalid && anuncioForm.get('cidade_local')?.touched}">
+                                    <div class="invalid-feedback">
+                                        Cidade é obrigatória
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="estado" class="form-label">Estado</label>
+                                    <input type="text" class="form-control" id="estado" formControlName="estado_local"
+                                        [ngClass]="{'is-invalid': anuncioForm.get('estado_local')?.invalid && anuncioForm.get('estado_local')?.touched}">
+                                    <div class="invalid-feedback">
+                                        Estado é obrigatório
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contato -->
                             <div class="mb-3">
                                 <label for="celular" class="form-label">Celular para contato</label>
                                 <input type="tel" class="form-control" id="celular" placeholder="(00) 00000-0000"
@@ -163,6 +190,7 @@
                                 </div>
                             </div>
 
+                            <!-- Preço -->
                             <div class="mb-3">
                                 <label for="preco" class="form-label">Preço (R$)</label>
                                 <div class="row">
@@ -187,6 +215,7 @@
                                 </div>
                             </div>
 
+                            <!-- Comodidades -->
                             <div class="mb-4">
                                 <label class="form-label">Comodidades</label>
                                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2">
@@ -203,6 +232,7 @@
                                 </div>
                             </div>
 
+                            <!-- Botões -->
                             <div class="d-flex justify-content-between">
                                 <button type="button" class="btn btn-outline-secondary"
                                     (click)="previousStep()">Voltar</button>

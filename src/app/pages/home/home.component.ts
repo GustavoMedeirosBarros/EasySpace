@@ -17,7 +17,6 @@ interface Category {
 
 interface Testimonial {
   name: string
-  role: string
   image: string
   text: string
   rating: number
@@ -85,21 +84,18 @@ export class HomeComponent implements OnInit {
   testimonials: Testimonial[] = [
     {
       name: "Carlos Silva",
-      role: "Empresário",
       image: "icon_h.png",
       text: "Encontrei o espaço perfeito para minha reunião de negócios. O processo foi simples e rápido!",
       rating: 5,
     },
     {
       name: "Ana Oliveira",
-      role: "Organizadora de Eventos",
       image: "icon_m.png",
       text: "A plataforma me ajudou a encontrar locais incríveis para os eventos que organizo. Recomendo!",
       rating: 5,
     },
     {
       name: "Roberto Martins",
-      role: "Professor",
       image: "icon_h.png",
       text: "Uso o Easy Space para encontrar salas de aula para meus workshops. Excelente variedade de opções!",
       rating: 4,
