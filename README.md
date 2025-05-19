@@ -1,6 +1,6 @@
 # EasySpace
 <p align="center">
-![EasySpace Logo](public/Logo.png)
+  <img src="public/Logo.png" />
 </p>
 
 ## Plataforma de Compartilhamento de Espaços para Locação em Sorocaba
