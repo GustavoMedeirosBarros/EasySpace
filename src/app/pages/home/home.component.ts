@@ -226,6 +226,12 @@ export class HomeComponent implements OnInit {
     })
   }
 
+  navigateToPopularCategory(categoryId: string): void {
+    this.router.navigate(["/explorar"], {
+      queryParams: { categoria: categoryId },
+    })
+  }
+
   getStarArray(rating: number): number[] {
     return Array(Math.floor(rating)).fill(0)
   }

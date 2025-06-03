@@ -26,7 +26,7 @@
         <div class="col-12">
             <div class="row g-3">
                 <div class="col-md-3" *ngFor="let category of popularCategories">
-                    <div class="category-card" (click)="navigateToCategory(category.id)">
+                    <div class="category-card" (click)="navigateToPopularCategory(category.id)">
                         <div class="category-icon">
                             <i [class]="'bi ' + category.icon"></i>
                         </div>

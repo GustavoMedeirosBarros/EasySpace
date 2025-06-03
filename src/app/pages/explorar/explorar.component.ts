@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Local } from '../../models/Local';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MockDataService } from '../../services/mock.dados.service';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 interface Category {
@@ -52,6 +52,7 @@ export class ExplorarComponent implements OnInit {
     private mockDataService: MockDataService,
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
   ) { }
 
   ngOnInit(): void {
@@ -63,7 +64,12 @@ export class ExplorarComponent implements OnInit {
 
     this.checkGeolocation()
 
-    this.applyFilters()
+    this.route.queryParams.subscribe((params) => {
+      if (params["categoria"]) {
+        this.selectedCategory = params["categoria"]
+      }
+      this.applyFilters()
+    })
   }
 
   loadComodidades(): void {
