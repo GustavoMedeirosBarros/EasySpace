@@ -306,7 +306,7 @@ export class ExplorarComponent implements OnInit {
     event.stopPropagation()
 
     if (!this.authService.isLoggedIn) {
-      this.router.navigate(["/register"], {
+      this.router.navigate(["/registro"], {
         queryParams: {
           redirect: "favorito",
           localId: local.id_local,
