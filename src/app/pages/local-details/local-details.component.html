@@ -148,19 +148,6 @@
                 </div>
             </div>
 
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Disponibilidade</h5>
-                    <p class="text-muted">Este espaço está disponível para reservas.</p>
-                    <p class="mb-0"><strong>Horário de funcionamento:</strong></p>
-                    <ul class="list-unstyled">
-                        <li>Segunda a Sexta: 8h às 22h</li>
-                        <li>Sábados: 9h às 18h</li>
-                        <li>Domingos: Fechado</li>
-                    </ul>
-                </div>
-            </div>
-
             <div class="card mb-4" *ngIf="local.comodidades && local.comodidades.length > 0">
                 <div class="card-body">
                     <h5 class="card-title mb-3">Comodidades</h5>
@@ -169,18 +156,6 @@
                             <i class="bi bi-check-circle-fill me-2 text-success"></i>
                             {{ formatComodidade(comodidade) }}
                         </li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Regras do espaço</h5>
-                    <ul class="rules-list">
-                        <li><i class="bi bi-info-circle me-2"></i>Proibido fumar</li>
-                        <li><i class="bi bi-info-circle me-2"></i>Não é permitido animais</li>
-                        <li><i class="bi bi-info-circle me-2"></i>Limite de pessoas: {{ 20 }}</li>
-                        <li><i class="bi bi-info-circle me-2"></i>Proibido festas ou eventos</li>
                     </ul>
                 </div>
             </div>
